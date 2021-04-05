@@ -3,7 +3,7 @@
     <div class="ym-g50 ym-gl" style="max-height: 161px !important; margin-top: 1em !important;">
         <div class="ym-gbox" >
             <section class="box info" >
-                <strong>{{ title }}</strong>
+                <strong>{{ title }}</strong>{% if date%} <strong style="color: red">*NEW*</strong>{% endif %}
 
                 <p>{{ excerpt | safe}}...</p>
                 <a href="/entry/{{ id }}/{{ link_name }}"><p class="readmore ym-g40">READ MORE</p></a>

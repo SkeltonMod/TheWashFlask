@@ -11,7 +11,7 @@
                             <div class="ym-grid linearize-level-2">
                                 <div id="post-list" class="ym-grid linearize-level-2">
                                     {% for entry in entries %}
-                                        {% with link_name = entry.file_name, title=entry.title,id=entry.id, excerpt=entry.excerpt %}
+                                        {% with link_name = entry.file_name, title=entry.title,id=entry.id,date = now < entry.date, excerpt=entry.excerpt %}
                                             {% include 'includes/_sections.html' %}
                                         {% endwith %}
                                     {% endfor %}

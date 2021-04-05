@@ -44,7 +44,9 @@ def home():
         data.append(result[x])
         if idx > 4:
             break
-    return render_template("home.html", entries=data, month=Entries(result), navlinks=navlinks)
+    print(data)
+    return render_template("home.html", entries=data, month=Entries(result), navlinks=navlinks,
+                           now=datetime.date(datetime.now()))
 
 
 @app.route('/entry/<string:id>/<string:title>')
@@ -103,6 +105,7 @@ def add_entry():
         # generate sort_id
         sort_id = date.strftime("%m%Y").lstrip("0").replace(" 0", "")
         cursor = mysql.connection.cursor()
+        print(sort_id)
         cursor.execute("INSERT INTO content(`file_name`, `date`, `title`, `author`, `sort_id`) VALUES(%s,%s,%s,%s,%s)",
                        (file_name, date, title, author, sort_id))
         mysql.connection.commit()
