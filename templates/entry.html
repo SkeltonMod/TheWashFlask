@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+{% block title %}{{ entry.title }}{% endblock %}
+{% block body %}
+    <div id="entries" class="ym-wbox child">
+        <section class="box info">
+            <strong id="title">{{ entry.title }}</strong>
+            <div id="post-body">
+                <p id="placeholder">{% filter markdown %} {{ body | safe}} {% endfilter %} </p></div>
+            <p>Posted on: <strong id="date">{{ entry.date }}</strong> </p>
+            <p>Posted by: <strong id="author">{{ entry.author }}</strong> </p>
+            <a href="/" class="post-link"><h5 class="readmore ym-g20">Go Back</h5></a>
+        </section>
+    </div>
+{% endblock %}

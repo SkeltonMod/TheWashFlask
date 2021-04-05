@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='yaml/demos/css/flexible-grids.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='normalize.css')}}">
+    <link rel="icon" href="{{  url_for('static', filename='img/favicon.jpg') }}">
+</head>
+<body>
+<header>
+    <div class="ym-wrapper">
+        <div class="ym-wbox">
+            <img class="center" src="{{ url_for('static', filename='img/banner.fw.png')}}" height="128" width="256" alt="Krabs"/>
+            <div class="ym-hlist">
+                <ul>
+                    <li><a href="/">Home</a> </li>
+                    <li><a href="/wash">Wash</a></li>
+                    <li><a href="/404">Arcade</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+<div id="content" class="ym-wrapper">
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="ym-wbox">
+                <h1 class="flashes success">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                </h1>
+            </div>
+        {% endif %}
+    {% endwith %}
+    {% block body %}{% endblock %}
+</div>
+
+
+
+</body>
+</html>
+
+
+

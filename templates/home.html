@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+{% block title %}Home{% endblock %}
+{% block body %}
+
+    <div id="home" class="ym-wbox child">
+        <main>
+            <div class="ym-column linearize-level-1">
+                <div class="ym-col3">
+                    <div class="ym-cbox">
+                        <section class="box info">
+                            <div class="ym-grid linearize-level-2">
+                                <div id="post-list" class="ym-grid linearize-level-2">
+                                    {% for entry in entries %}
+                                        {% with link_name = entry.file_name, title=entry.title,id=entry.id, excerpt=entry.excerpt %}
+                                            {% include 'includes/_sections.html' %}
+                                        {% endwith %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+                <div class="ym-col2">
+                    <section class="box info">
+                        <strong>Posts by month1</strong>
+                        <div class="ym-vlist">
+                            <ul id="months">
+                                {% for idx in month %}
+                                    <li class="post-months" style="cursor: pointer !important;" id="{{ idx.sort_id }}">
+                                        {{ idx.tally }}
+                                        <ul id="nest{{ idx.sort_id }}" style="display: none !important;">
+                                                {% for links in navlinks %}
+                                                    {% if links['sort_id']|int() == idx.sort_id|int() %}
+                                                        <li><a href="/entry/{{ links['id'] }}/{{ links['file_name'] }}">{{ links['title'] }}</a></li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                        </ul>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        $(function (){
+            $('.post-months').click(function (e){
+                e.preventDefault()
+                let id = this.id
+                let item = document.getElementById(`nest${id}`)
+                item.style.display = item.style.display === "none" ? "block" : "none"
+                $(`#${id} a`).unbind('click').click(function() {
+                    window.location.href = $(this).attr('href');
+                    return false;
+                });
+            })
+        })
+
+    </script>
+
+{% endblock %}

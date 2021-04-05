@@ -1,0 +1,55 @@
+
+ So, yesterday I had a call with my friends over at discord because none of us know how to port forward for teamspeak or pay for slack. I encountered this girl named pat and let me tell you she is one weird girl, for starters she has this vibe that's as strong as juliana or andi (the girl that almost got me imprisoned) and her red flags were all over the place. I have also found the time to take a look back at my abilities when it comes to talking to women or starting any sort of menial relationship with them, so i came with an epiphany that i just have this innate sense to figure out incoming red flags when it comes to making a special relationship with women.
+
+
+
+
+ My buddy paolo and luigi helped (sort of) did the talking to pat and it was a disaster, the girl just spouted loads of red flags and got us into a sticky situation. just imagine my dumbass got smack banged right into talking with a girl that i barely know/knew and the first thing she did was just drop all the red flags she can put her hands on. luckily i'm not in the mood to form any sort of special relationship with someone, it's probably because of my age wherein my wants are over shadowed by my needs. in all honesty, this really is just another losing battle and probably a fatal one if i continue to blindly pursue it.
+
+
+
+
+ all is well as long as i have my friends... sort of.
+
+
+
+
+ whateves.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

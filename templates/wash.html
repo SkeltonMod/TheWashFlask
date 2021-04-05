@@ -1,0 +1,34 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <div id="wash" class="ym-wbox child">
+
+        <section class="box info">
+            <div id="wash-body">
+                <div style="text-align: center;">
+                    <strong style="text-transform: uppercase"> {{ rss_feed.title }} </strong><br>
+                    <strong>(<a href="{{ rss_feed.links[0].href }}">MyAnimeList</a>)</strong><br>
+                    <strong>{{ rss_feed.subtitle }}</strong>
+                    <hr>
+                </div>
+                <div class="ym-grid linearize-level-2" >
+                    <div id="rss-list" class="ym-grid linearize-level-2 center">
+                        {% for entry in rss_entries %}
+                            {% if loop.index <= 6 %}
+                                <div class="ym-g50 ym-gl">
+                                    <div class="ym-gbox">
+                                        <section class="box info">
+                                            <a href="{{ entry.link }}" class="links">{{ entry.title }}</a><br>
+                                            <p>{{ entry.summary }}</p>
+                                            <p>{{ entry.published }}</p>
+                                        </section>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}
