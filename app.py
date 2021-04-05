@@ -14,7 +14,7 @@ CONFIG = {
     "CACHE_TYPE": "SimpleCache",
     "CACHE_DEFAULT_TIMEOUT": 300
 }
-
+# FORWARD
 app = Flask(__name__)
 # Configure MYSQL
 app.config['MYSQL_HOST'] = '127.0.0.1'
@@ -101,8 +101,9 @@ def add_entry():
             file.close()
 
         # generate sort_id
-        sort_id = date.strftime("%m%Y").lstrip("0").replace(" 0", "")
+        sort_id = date.strftime("%d%Y").lstrip("0").replace(" 0", "")
         cursor = mysql.connection.cursor()
+        print(sort_id)
         cursor.execute("INSERT INTO content(`file_name`, `date`, `title`, `author`, `sort_id`) VALUES(%s,%s,%s,%s,%s)",
                        (file_name, date, title, author, sort_id))
         mysql.connection.commit()

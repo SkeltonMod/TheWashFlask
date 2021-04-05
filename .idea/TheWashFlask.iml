@@ -17,7 +17,7 @@
     <orderEntry type="library" name="highlight" level="application" />
   </component>
   <component name="PackageRequirementsSettings">
-    <option name="removeUnused" value="true" />
+    <option name="keepMatchingSpecifier" value="false" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />

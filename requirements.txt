@@ -2,3 +2,4 @@ feedparser~=6.0.2
 Flask~=1.1.2
 beautifulsoup4~=4.9.3
 WTForms~=2.3.3
+setuptools~=54.2.0
