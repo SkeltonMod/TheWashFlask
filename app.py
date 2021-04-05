@@ -82,7 +82,7 @@ def add_entry():
         # Get the Data
         title = form.title.data
         entry = form.entry.data
-        date = datetime.strptime(form.date.data, "%Y-%d-%m")
+        date = datetime.strptime(form.date.data, "%Y-%m-%d")
         author = form.author.data
         # Append to File
 
@@ -101,9 +101,8 @@ def add_entry():
             file.close()
 
         # generate sort_id
-        sort_id = date.strftime("%d%Y").lstrip("0").replace(" 0", "")
+        sort_id = date.strftime("%m%Y").lstrip("0").replace(" 0", "")
         cursor = mysql.connection.cursor()
-        print(sort_id)
         cursor.execute("INSERT INTO content(`file_name`, `date`, `title`, `author`, `sort_id`) VALUES(%s,%s,%s,%s,%s)",
                        (file_name, date, title, author, sort_id))
         mysql.connection.commit()
