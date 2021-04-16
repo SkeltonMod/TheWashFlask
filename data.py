@@ -1,4 +1,6 @@
-import random as rd
+from bs4 import BeautifulSoup
+import requests
+import constants
 
 
 def Entries(arr):  # ACCEPTS LIST
@@ -8,6 +10,7 @@ def Entries(arr):  # ACCEPTS LIST
             f"{arr[x].get('sort_id')}, {arr[x].get('date').strftime('%B')}, {arr[x].get('date').year}")
 
     return tally_months(dates)
+
 
 def tally_months(arr):
     arr.sort()
@@ -31,3 +34,32 @@ def tally_months(arr):
         c.append({"tally": f"{split[1]}, {split[2]} ({b[x]})", "sort_id": split[0]})
 
     return c
+
+
+def search(keyword):
+    response = requests.get(constants.SEARCH_URL + keyword.replace(" ", "-").lower()).content
+    bs = BeautifulSoup(response, "html.parser")
+    anime = list()
+    for a in bs.find_all("a", href=True):
+        if str(keyword).lower() in str(a.text).lower():
+            anime.append({"title": a.text, "link": a['href'], 'name': str(a.text).replace(" ", "-").lower()})
+    return anime
+
+
+def play(keyword):
+    response = requests.get(constants.SERIES_URL + keyword.replace(" ", "-").lower()).content
+    bs = BeautifulSoup(response, "html.parser")
+    info = list()
+    episodes = list()
+    souped = dict()
+    # Get Anime Info
+    for p in bs.find_all("p", class_="type"):
+        info.append({p.text.split(":")[0]: p.text.split(":")[1]})
+    souped['info'] = info
+    # Get Anime Episodes
+    response = requests.get(constants.EPLIST_URL + keyword.replace(" ", "-").lower()).content
+    bs = BeautifulSoup(response, "html.parser")
+    for ep in bs.find("ul", id="episode_related").find_all("li"):
+        episodes.append({ep.div.text: ep.a['href']})
+    souped['episodes'] = episodes
+    return souped

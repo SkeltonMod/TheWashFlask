@@ -1,0 +1,39 @@
+{% extends 'layout.html' %}
+{% block title %}Player{% endblock %}
+
+{% block body %}
+    <div id="player" class="ym-wbox child">
+    {# Player Head #}
+        <section class="box info">
+            <p><strong>ANIME PLAYER</strong></p>
+            {%  for item  in info %}
+                {% for key, value in item.items() %}
+                    <strong>{{ key }}:</strong><p>{{ value }}</p>
+                {% endfor %}
+            {% endfor %}
+
+            <video width="640" height="480" class="center" controls>
+                <source src="https://storage.googleapis.com/the-signal-309813/UM1JNL2TO2_R/st22_eureka-seven-episode-1.1618530246.mp4"
+                        type="video/mp4">
+            </video>
+            <center>
+                <div class="footer">
+                    <form class="ym-form">
+                        <div class="ym-fbox">
+                            <div class="ym-fbox-wrap ym-grid">
+                                {% for item in episodes %}
+                                    {% for key, value in item.items() %}
+                                        <button type="submit" style="min-width: 59px; margin-top: 2em" class="ym-button ym-primary" value="{{ value }}">{{ key }}</button>
+                                    {% endfor %}
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </center>
+        </section>
+    </div>
+
+{% endblock %}

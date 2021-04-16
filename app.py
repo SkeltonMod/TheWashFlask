@@ -3,7 +3,7 @@ from flask_mysqldb import MySQL
 from flaskext.markdown import Markdown
 import os
 from datetime import datetime
-from data import Entries
+from data import Entries, search, play
 from bs4 import BeautifulSoup
 from flask_caching import Cache
 import feedparser as fp
@@ -77,6 +77,10 @@ class EntryForm(Form):
     entry = TextAreaField("", [validators.Length(min=1)])
 
 
+class AnimeSearch(Form):
+    title = StringField("", [validators.length(min=1)])
+
+
 @app.route('/editor', methods=['POST', 'GET'])
 def add_entry():
     form = EntryForm(request.form)
@@ -119,6 +123,22 @@ def add_entry():
 def getRSS():
     rss = fp.parse("https://myanimelist.net/rss.php?type=rw&u=lil_fuckface")
     return render_template("wash.html", rss_entries=rss.entries, rss_feed=rss.feed)
+
+
+@app.route('/anime', methods=['POST', 'GET'])
+def searchAnime():
+    series = dict()
+    form = AnimeSearch(request.form)
+    if request.method == "POST":
+        series = search(form.title.data)
+    return render_template("anime.html", series=series, form=form)
+
+
+@app.route('/player/<string:name>')
+def playAnime(name):
+    series = play(name)
+    print(series)
+    return render_template("player.html", info=series['info'], episodes=series['episodes'])
 
 
 if __name__ == '__main__':
