@@ -94,8 +94,7 @@
   /* (en) HTML5 - default media element styles */
   /* (de) HTML5 - Standard Eigenschaften für Media-Elemente */
   audio,
-  canvas,
-  video {
+  canvas{
     display: inline-block;
   }
 

@@ -136,6 +136,11 @@
     width: 14%;
   }
 }
+
+.video_player{
+  width: 640px;
+  height: 480px;
+}
 @media screen and (max-width: 480px) {
   /* Linearisation for Grid- and Column-Module, based on CSS class .linearize-level-2 */
   .linearize-level-2, .linearize-level-2 > [class*="ym-c"], .linearize-level-2 > [class*="ym-g"] {
@@ -182,5 +187,9 @@
 
   .ym-searchform input[type="search"] {
     width: 75%;
+  }
+  .video_player{
+    width: 320px;
+    height: 240px;
   }
 }
