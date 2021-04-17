@@ -60,9 +60,6 @@ def getAnime(keyword):
     souped['info'] = info
 
     # Get Anime Episodes
-    # response = requests.get(constants.EPLIST_URL + keyword.replace(" ", "-").lower()).content
-    # bs = BeautifulSoup(response, "html.parser")
-
     response = requests.get(constants.SERIES_URL + keyword).content
     bs = BeautifulSoup(response, "html.parser")
     info = list()
@@ -70,7 +67,6 @@ def getAnime(keyword):
         info.append({"end": eplist['ep_end'], "start": eplist['ep_start']})
     movie_id = bs.find("input", {"id": "movie_id"}).get('value')
     info.insert(0, {"movie_id": movie_id})
-    # print(f"ep_start={info[1]['start']}&ep_end={info[1]['end']}&id={info[0]['movie_id']}")
     response = requests.get(constants.EPLIST_URL +
                             f"ep_start={info[1]['start']}&ep_end={info[1]['end']}&id={info[0]['movie_id']}&default_ep"
                             f"=0&alias={keyword}").content
