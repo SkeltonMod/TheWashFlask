@@ -42,24 +42,54 @@ def search(keyword):
     anime = list()
     for a in bs.find_all("a", href=True):
         if str(keyword).lower() in str(a.text).lower():
-            anime.append({"title": a.text, "link": a['href'], 'name': str(a.text).replace(" ", "-").lower()})
+            anime.append({"title": a.text, "link": a['href'], 'name': str(a.text).replace(" ", "-").lower(),
+                          "serialized_name": str(a['href']).replace("/category/", "")})
     return anime
 
 
-def play(keyword):
+def getAnime(keyword):
     response = requests.get(constants.SERIES_URL + keyword.replace(" ", "-").lower()).content
     bs = BeautifulSoup(response, "html.parser")
     info = list()
     episodes = list()
     souped = dict()
+
     # Get Anime Info
     for p in bs.find_all("p", class_="type"):
         info.append({p.text.split(":")[0]: p.text.split(":")[1]})
     souped['info'] = info
+
     # Get Anime Episodes
-    response = requests.get(constants.EPLIST_URL + keyword.replace(" ", "-").lower()).content
+    # response = requests.get(constants.EPLIST_URL + keyword.replace(" ", "-").lower()).content
+    # bs = BeautifulSoup(response, "html.parser")
+
+    response = requests.get(constants.SERIES_URL + keyword).content
+    bs = BeautifulSoup(response, "html.parser")
+    info = list()
+    for eplist in bs.find("ul", {"id": "episode_page"}).find_all("a"):
+        info.append({"end": eplist['ep_end'], "start": eplist['ep_start']})
+    movie_id = bs.find("input", {"id": "movie_id"}).get('value')
+    info.insert(0, {"movie_id": movie_id})
+    # print(f"ep_start={info[1]['start']}&ep_end={info[1]['end']}&id={info[0]['movie_id']}")
+    response = requests.get(constants.EPLIST_URL +
+                            f"ep_start={info[1]['start']}&ep_end={info[1]['end']}&id={info[0]['movie_id']}&default_ep"
+                            f"=0&alias={keyword}").content
     bs = BeautifulSoup(response, "html.parser")
     for ep in bs.find("ul", id="episode_related").find_all("li"):
-        episodes.append({ep.div.text: ep.a['href']})
+        episodes.append({ep.div.text: str(ep.a['href']).replace(" ", "")})
     souped['episodes'] = episodes
     return souped
+
+
+def play(keyword):
+    # Get Current Anime Episode
+    response = requests.get(constants.EPISODE_URL + keyword).content
+    bs = BeautifulSoup(response, "html.parser")
+    iframe_src = ""
+    for iframe in bs.find_all("iframe"):
+        iframe_src = iframe['src']
+
+    # get ID and title GET Headers
+    get_headers = iframe_src.replace("//gogo-play.net/streaming.php?", "")
+    response = requests.get(constants.EPISODE_MEDIA_URL + get_headers)
+    return response.json()

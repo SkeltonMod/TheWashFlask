@@ -13,27 +13,29 @@
             {% endfor %}
 
             <video width="640" height="480" class="center" controls>
-                <source src="https://storage.googleapis.com/the-signal-309813/UM1JNL2TO2_R/st22_eureka-seven-episode-1.1618530246.mp4"
+                <source src="{{ media }}"
                         type="video/mp4">
             </video>
-            <center>
-                <div class="footer">
-                    <form class="ym-form">
-                        <div class="ym-fbox">
-                            <div class="ym-fbox-wrap ym-grid">
-                                {% for item in episodes %}
-                                    {% for key, value in item.items() %}
-                                        <button type="submit" style="min-width: 59px; margin-top: 2em" class="ym-button ym-primary" value="{{ value }}">{{ key }}</button>
-                                    {% endfor %}
-                                {% endfor %}
 
-                            </div>
+                <div class="footer">
+                    <form class="ym-form" method="POST">
+                        <div class="ym-fbox">
+                           <center>
+                               <div class="ym-fbox-wrap ym-grid">
+                                   {% for item in episodes %}
+                                       {% for key, value in item.items() %}
+                                           <a style="min-width: 59px; margin-top: 2em" class="ym-button ym-primary" href="/player/{{ title }}/{{ value }}">{{ key }}</a>
+                                       {% endfor %}
+                                   {% endfor %}
+
+                               </div>
+                           </center>
 
                         </div>
                     </form>
                 </div>
-            </center>
         </section>
-    </div>
 
+
+    </div>
 {% endblock %}

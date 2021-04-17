@@ -3,11 +3,12 @@ from flask_mysqldb import MySQL
 from flaskext.markdown import Markdown
 import os
 from datetime import datetime
-from data import Entries, search, play
+from data import Entries, search, getAnime, play
 from bs4 import BeautifulSoup
 from flask_caching import Cache
 import feedparser as fp
-from wtforms import Form, StringField, TextAreaField, validators
+import re
+from wtforms import Form, StringField, TextAreaField, validators, HiddenField
 
 CONFIG = {
     "DEBUG": True,
@@ -134,11 +135,12 @@ def searchAnime():
     return render_template("anime.html", series=series, form=form)
 
 
-@app.route('/player/<string:name>')
-def playAnime(name):
-    series = play(name)
-    print(series)
-    return render_template("player.html", info=series['info'], episodes=series['episodes'])
+@app.route('/player/<string:name>/<string:episode>', methods=["GET", "POST"])
+def playAnime(name, episode):
+    series = getAnime(name)
+    media = play(f"/{episode}")
+    return render_template("player.html", info=series['info'], episodes=series['episodes'], title=name,
+                           media=media["source"][0]['file'])
 
 
 if __name__ == '__main__':
