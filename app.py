@@ -7,6 +7,7 @@ from data import Entries, search, getAnime, play
 from bs4 import BeautifulSoup
 from flask_caching import Cache
 import feedparser as fp
+import constants
 from wtforms import Form, StringField, TextAreaField, validators
 
 CONFIG = {
@@ -17,10 +18,10 @@ CONFIG = {
 # FORWARD
 app = Flask(__name__)
 # Configure MYSQL
-app.config['MYSQL_HOST'] = '127.0.0.1'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB'] = 'posts'
+app.config['MYSQL_HOST'] = constants.HOST
+app.config['MYSQL_USER'] = constants.USERNAME
+app.config['MYSQL_PASSWORD'] = constants.PASSWORD
+app.config['MYSQL_DB'] = constants.DB_NAME
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 app.config.from_mapping(CONFIG)
 Markdown(app)
