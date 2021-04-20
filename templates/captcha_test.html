@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+{% block title %}Player{% endblock %}
+
+{% block body %}
+    <div id="player" class="ym-wbox child">
+        {# Player Head #}
+        <section class="box info">
+            <p><strong>CAPTCHA TEST</strong></p>
+
+            <video class="video_player center" id="video_player" controls>
+                <source src="{{ media }}">
+            </video>
+            <div id="captcha">
+                <p>Video not playing?</p><a href="https://gogo-cdn.com{{ download_link }}">Solve Captcha Here</a>
+            </div>
+        </section>
+
+        <script>
+
+
+            $('.sort_by').on('click', function (e){
+                e.preventDefault();
+                let html = ""
+                for(let i = Number(this.dataset.ep_start); i <= Number(this.dataset.ep_end); ++i){
+                    if (i > 0){
+                        html += `<a style="min-width: 59px; margin-top: 2em" class="ym-button ym-primary" href="/player/{{ title }}/{{ title }}-episode-${i}">EP ${i}</a>`
+                    }
+                }
+                $("#list").html(html)
+            })
+
+        </script>
+
+    </div>
+{% endblock %}

@@ -91,3 +91,24 @@ def play(keyword):
     get_headers = iframe_src.replace("//gogo-play.net/streaming.php?", "")
     response = requests.get(constants.EPISODE_MEDIA_URL + get_headers)
     return response.json()
+
+
+def download(keyword):
+    get_body = requests.get(constants.EPISODE_URL + keyword).content
+    bs = BeautifulSoup(get_body, "html.parser")
+    dl_link = ""
+    final_link = list()
+    for dl in bs.find("li", class_="dowloads").find_all("a"):
+        dl_link = dl['href']
+    get_body = requests.get(dl_link).content
+    bs = BeautifulSoup(get_body, "html.parser")
+
+    for dl in bs.find("div", class_="mirror_link").find_all("a"):
+        if "720P" in dl.text:
+            dl_link = dl['href']
+    get_body = requests.get(dl_link).content
+    bs = BeautifulSoup(get_body, "html.parser")
+    capt = ""
+    for captcha in bs.find_all("form", {"id": "challenge-form"}):
+        final_link.append({"download_link": captcha['action'], "captcha_form": captcha})
+    return final_link
