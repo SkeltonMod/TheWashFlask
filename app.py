@@ -137,8 +137,16 @@ def searchAnime():
 def playAnime(name, episode):
     series = getAnime(name)
     media = play(f"/{episode}")
+    sort_by = getAnime(name)
+    sort_by['sort_by'].pop(0)
+    print(media)
     return render_template("player.html", info=series['info'], episodes=series['episodes'], title=name,
-                           media=media["source"][0]['file'])
+                           media=media["source"][0]['file'], sort_by=sort_by['sort_by'])
+
+
+@app.route('/refresh_list', methods=['POST'])
+def refresh_list():
+    pass
 
 
 if __name__ == '__main__':

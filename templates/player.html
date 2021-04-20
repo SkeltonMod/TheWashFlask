@@ -12,17 +12,24 @@
                 {% endfor %}
             {% endfor %}
 
-            <video class="video_player center" controls>
-                <source src="{{ media }}"
-                        type="video/mp4">
+            <video class="video_player center" id="video_player" controls>
+                <source src="{{ media }}">
             </video>
 
                 <div class="footer">
                     <form class="ym-form" method="POST">
                         <div class="ym-fbox">
+                            <div class="ym-fbox-wrap ym-grid">
+                                {% for s in sort_by %}
+                                    <a style="min-width: 59px; margin-top: 2em; text-align: center" data-ep_start="{{ s.start }}"
+                                       data-ep_end="{{ s.end }}" class="ym-button sort_by" href="#">
+                                        {{ s.start }}- {{ s.end }}</a>
+                                {% endfor %}
+                            </div>
                            <center>
-                               <div class="ym-fbox-wrap ym-grid">
-                                   {% for item in episodes %}
+
+                               <div class="ym-fbox-wrap ym-grid" id="list">
+                                   {% for item in episodes | reverse %}
                                        {% for key, value in item.items() %}
                                            <a style="min-width: 59px; margin-top: 2em" class="ym-button ym-primary" href="/player/{{ title }}/{{ value }}">{{ key }}</a>
                                        {% endfor %}
@@ -36,6 +43,21 @@
                 </div>
         </section>
 
+    <script>
+
+
+        $('.sort_by').on('click', function (e){
+            e.preventDefault();
+            let html = ""
+            for(let i = Number(this.dataset.ep_start); i <= Number(this.dataset.ep_end); ++i){
+                if (i > 0){
+                    html += `<a style="min-width: 59px; margin-top: 2em" class="ym-button ym-primary" href="/player/{{ title }}/{{ title }}-episode-${i}">EP ${i}</a>`
+                }
+            }
+            $("#list").html(html)
+        })
+
+    </script>
 
     </div>
 {% endblock %}

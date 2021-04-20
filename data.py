@@ -73,7 +73,9 @@ def getAnime(keyword):
     bs = BeautifulSoup(response, "html.parser")
     for ep in bs.find("ul", id="episode_related").find_all("li"):
         episodes.append({ep.div.text: str(ep.a['href']).replace(" ", "")})
+
     souped['episodes'] = episodes
+    souped['sort_by'] = info
     return souped
 
 

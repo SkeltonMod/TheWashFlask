@@ -15,6 +15,9 @@
     <orderEntry type="library" name="simplemde" level="application" />
     <orderEntry type="library" name="github" level="application" />
     <orderEntry type="library" name="highlight" level="application" />
+    <orderEntry type="library" name="video-js" level="application" />
+    <orderEntry type="library" name="video" level="application" />
+    <orderEntry type="library" name="@videojs/http-streaming" level="application" />
   </component>
   <component name="PackageRequirementsSettings">
     <option name="keepMatchingSpecifier" value="false" />
