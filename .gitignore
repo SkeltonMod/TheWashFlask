@@ -1,3 +1,4 @@
 # Project exclude paths
 /venv/
 /entries/
+*.zip
