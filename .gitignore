@@ -2,3 +2,4 @@
 /venv/
 /entries/
 *.zip
+constants.py
