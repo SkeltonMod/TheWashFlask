@@ -31,7 +31,7 @@
                                <div class="ym-fbox-wrap ym-grid" id="list">
                                    {% for item in episodes | reverse %}
                                        {% for key, value in item.items() %}
-                                           <a style="min-width: 59px; margin-top: 2em" class="ym-button ym-primary" href="/player/{{ title }}/{{ value }}">{{ key }}</a>
+                                           <a id="{{ key | replace("EP ","") }}" style="min-width: 59px; margin-top: 2em" class="ym-button ym-primary save ym-close" href="/player/{{ title }}/{{ value }}">{{ key }}</a>
                                        {% endfor %}
                                    {% endfor %}
 
@@ -44,19 +44,65 @@
         </section>
 
     <script>
-
-
+        let db = new PouchDB('episode')
+        let finished = false
         $('.sort_by').on('click', function (e){
             e.preventDefault();
             let html = ""
             for(let i = Number(this.dataset.ep_start); i <= Number(this.dataset.ep_end); ++i){
                 if (i > 0){
-                    html += `<a style="min-width: 59px; margin-top: 2em" class="ym-button ym-primary" href="/player/{{ title }}/{{ title }}-episode-${i}">EP ${i}</a>`
+                    html += `<a style="min-width: 59px; margin-top: 2em" class="ym-button ym-primary save ym-close" href="/player/{{ title }}/{{ title }}-episode-${i}">EP ${i}</a>`
                 }
             }
             $("#list").html(html)
         })
 
+
+        $(document).ready(function (){
+            let link = String(window.location.href)
+            let ep_num = String(window.location).slice(-1)
+            let series = String(window.location.pathname).split('/')[2]
+            let vid = document.getElementById('video_player')
+            vid.addEventListener('timeupdate', function (e){
+                let current_time = parseInt(e.target.currentTime) / 60
+                let duration = parseInt(e.target.duration) / 60
+                let difference = duration.toFixed(0) - Number(current_time)
+
+                if (difference <= 4){
+                    finished = true
+                }
+
+
+
+            })
+            finished_Ep(ep_num, link, series)
+        })
+
+        function finished_Ep(num, link, series){
+            let episode = {
+                _id: `${series}-${num}`,
+                episode_num: num,
+                episode_link: link,
+                episode_series: series
+            }
+            db.put(episode, function callback(err, result){
+                if (!err){
+                    console.log("Successfully added Episode to finished!"+ result)
+                }else{
+                    console.log(err)
+                }
+            })
+            getFinished()
+        }
+
+        // Debug only
+        function getFinished(id){
+            db.allDocs({include_docs: true, descending: true}, function (err, doc){
+                $.each(doc.rows, function (key, value){
+                    $(`#${value['doc']['episode_num']}`).removeClass('ym-primary ym-close').addClass('ym-success ym-save')
+                })
+            })
+        }
     </script>
 
     </div>

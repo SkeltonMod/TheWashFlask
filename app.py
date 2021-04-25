@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from flask_caching import Cache
 import feedparser as fp
 import constants
+from flask_cors import CORS
 from wtforms import Form, StringField, TextAreaField, validators
 
 CONFIG = {
@@ -28,6 +29,7 @@ Markdown(app)
 mysql = MySQL(app)
 cache = Cache(app)
 app.secret_key = "malim123HAHAHAHAOTEN09292"
+cors = CORS(app)
 
 
 @app.route('/')
@@ -141,13 +143,6 @@ def playAnime(name, episode):
     sort_by['sort_by'].pop(0)
     return render_template("player.html", info=series['info'], episodes=series['episodes'], title=name,
                            media=media["source"][0]['file'], sort_by=sort_by['sort_by'])
-
-
-@app.route('/test')
-def captchaTest():
-    captcha_form = download("darling-in-the-franxx-episode-1")[0]['captcha_form']
-    download_link = download("darling-in-the-franxx-episode-1")[0]['download_link']
-    return render_template("captcha_test.html", captcha_form=captcha_form, download_link=download_link)
 
 
 if __name__ == '__main__':
