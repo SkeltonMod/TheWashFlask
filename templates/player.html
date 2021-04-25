@@ -31,7 +31,7 @@
                                <div class="ym-fbox-wrap ym-grid" id="list">
                                    {% for item in episodes | reverse %}
                                        {% for key, value in item.items() %}
-                                           <a id="{{ key | replace("EP ","") }}" style="min-width: 59px; margin-top: 2em" class="ym-button ym-primary save ym-close" href="/player/{{ title }}/{{ value }}">{{ key }}</a>
+                                           <a id="{{ title }}-episode-{{ key | replace("EP ","") }}" style="min-width: 59px; margin-top: 2em" class="ym-button ym-primary save ym-close" href="/player/{{ title }}/{{ value }}">{{ key }}</a>
                                        {% endfor %}
                                    {% endfor %}
 
@@ -44,8 +44,7 @@
         </section>
 
     <script>
-        let db = new PouchDB('episode')
-        let finished = false
+        let db = new PouchDB('episodes')
         $('.sort_by').on('click', function (e){
             e.preventDefault();
             let html = ""
@@ -69,12 +68,11 @@
                 let difference = duration.toFixed(0) - Number(current_time)
 
                 if (difference <= 4){
-                    finished = true
+                    $("#{{ title }}-episode-"+ep_num).removeClass('ym-primary ym-close').addClass('ym-success ym-save')
                 }
 
-
-
             })
+
             finished_Ep(ep_num, link, series)
         })
 
@@ -85,23 +83,41 @@
                 episode_link: link,
                 episode_series: series
             }
-            db.putIfNotExists(episode, function callback(err, result){
-                if (!err){
-                    console.log("Successfully added Episode to finished!")
-                }else{
-                    console.log(err)
-                }
+            db.putIfNotExists(episode).then(function (result){
+                console.log("Successfully Added to EP DB")
+                db.createIndex({
+                    index: {
+                        fields: ['_id', 'episode_series', 'episode_link', 'episode_num']
+                    }
+                }).then(function (result){
+                    console.log(result)
+                    getFinished(series)
+                }).catch(function(error){
+                    console.log(error)
+                })
+            }).catch(function (error){
+                console.log(error)
             })
-            getFinished()
+
         }
 
-        function getFinished(){
-            db.allDocs({include_docs: true, descending: true}, function (err, doc){
-                $.each(doc.rows, function (key, value){
-                    $(`#${value['doc']['episode_num']}`).removeClass('ym-primary ym-close').addClass('ym-success ym-save')
+        function getFinished(series){
+
+
+            db.find({
+                selector: {episode_series: series},
+                fields: ['_id', 'episode_series', 'episode_link', 'episode_num']
+            }).then(function (result){
+                $.each(result.docs, function (key, value){
+                    $("#{{ title }}-episode-"+value['episode_num']).removeClass('ym-primary ym-close').addClass('ym-success ym-save')
                 })
+            }).catch(function (err){
+                console.log(err)
             })
+
+
         }
+
     </script>
 
     </div>
