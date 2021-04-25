@@ -65,11 +65,11 @@
             vid.addEventListener('timeupdate', function (e){
                 let current_time = parseInt(e.target.currentTime) / 60
                 let duration = parseInt(e.target.duration) / 60
-                let difference = duration.toFixed(0) - Number(current_time)
+                //let difference = duration.toFixed(0) - Number(current_time)
 
-                if (difference <= 4){
-                    $("#{{ title }}-episode-"+ep_num).removeClass('ym-primary ym-close').addClass('ym-success ym-save')
-                }
+                //if (difference <= 4){
+                    //$("#{{ title }}-episode-"+ep_num).removeClass('ym-primary ym-close').addClass('ym-success ym-save')
+                //}
 
             })
 
