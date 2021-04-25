@@ -85,9 +85,9 @@
                 episode_link: link,
                 episode_series: series
             }
-            db.put(episode, function callback(err, result){
+            db.putIfNotExists(episode, function callback(err, result){
                 if (!err){
-                    console.log("Successfully added Episode to finished!"+ result)
+                    console.log("Successfully added Episode to finished!")
                 }else{
                     console.log(err)
                 }
@@ -95,8 +95,7 @@
             getFinished()
         }
 
-        // Debug only
-        function getFinished(id){
+        function getFinished(){
             db.allDocs({include_docs: true, descending: true}, function (err, doc){
                 $.each(doc.rows, function (key, value){
                     $(`#${value['doc']['episode_num']}`).removeClass('ym-primary ym-close').addClass('ym-success ym-save')
