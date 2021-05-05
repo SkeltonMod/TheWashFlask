@@ -2,50 +2,47 @@
 {% block title %}Home{% endblock %}
 {% block body %}
 
-    <div id="home" class="ym-wbox child">
-        <main>
-            <div class="ym-column linearize-level-1">
-                <div class="ym-col3">
-                    <div class="ym-cbox">
-                        <section class="box info">
-                            <div class="ym-grid linearize-level-2">
-                                <div id="post-list" class="ym-grid linearize-level-2">
-                                    {% for entry in entries %}
-                                        {% with link_name = entry.file_name, title=entry.title,id=entry.id,date = now < entry.date, excerpt=entry.excerpt %}
-                                            {% include 'includes/_sections.html' %}
-                                        {% endwith %}
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-                <div class="ym-col2">
-                    <section class="box info">
-                        <strong>Posts by month</strong>
-                        <div class="ym-vlist">
-                            <ul id="months">
-                                {% for idx in month %}
-                                    <li class="post-months" style="cursor: pointer !important;" id="{{ idx.sort_id }}">
-                                        {{ idx.tally }}
-                                        <ul id="nest{{ idx.sort_id }}" style="display: none !important;">
-                                                {% for links in navlinks %}
-                                                    {% if links['sort_id']|int() == idx.sort_id|int() %}
-                                                        <li><a href="/entry/{{ links['id'] }}/{{ links['file_name'] }}">{{ links['title'] }}</a></li>
-                                                    {% endif %}
-                                                {% endfor %}
-                                        </ul>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
 
-                    </section>
-                </div>
-            </div>
-        </main>
+
+    <div class="content" style="text-align: center">
+
+        <h1 class="title-dashed">The Wash</h1>
+        <div class="inner" style="text-align: center">
+            <div class="icon" style="text-align: center"><img src="{{  url_for('static', filename='img/bomb.png') }}"  alt="img"/></div>
+
+            <ul>
+                <li class="s">Press to Alt + L to toggle Archived Posts.</li><br>
+                {% for entry in entries %}
+                    <li id="{{ entry.id }}" class="s"><a href="/entry/{{ entry.id }}/{{ entry.file_name }}"> {{ entry.title }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
+    <div id="links" class="content" style="text-align: center; display: none" >
+
+        <h1 class="title-dashed">The Wash</h1>
+        <div class="inner">
+            <div class="icon"><img src="{{  url_for('static', filename='img/bomb.png') }}"  alt="img"/></div>
+
+            <ul style="text-align: left">
+                {% for idx in month %}
+                    <li class="post-months" style="cursor: pointer !important;" id="{{ idx.sort_id }}">
+                        {{ idx.tally }}
+                        <ul id="nest{{ idx.sort_id }}" style="display: none !important;">
+                            {% for links in navlinks %}
+                                {% if links['sort_id']|int() == idx.sort_id|int() %}
+                                    <li><a href="/entry/{{ links['id'] }}/{{ links['file_name'] }}">{{ links['title'] }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
     <script>
+    let links = false
         $(function (){
             $('.post-months').click(function (e){
                 e.preventDefault()
@@ -57,6 +54,20 @@
                     return false;
                 });
             })
+
+            document.addEventListener('keydown', function (e){
+                if(e.altKey && e.key === "l"){
+                    links = !links
+                }
+                if(links){
+                    $("#links").show()
+                    $("#links").draggable()
+                }else {
+                    $("#links").hide()
+                }
+            })
+
+
         })
 
     </script>

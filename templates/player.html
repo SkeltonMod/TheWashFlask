@@ -1,56 +1,51 @@
 {% extends 'layout.html' %}
-{% block title %}Player{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block body %}
-    <div id="player" class="ym-wbox child">
-    {# Player Head #}
-        <section class="box info">
-            <p><strong>ANIME PLAYER</strong></p>
-            {%  for item  in info %}
-                {% for key, value in item.items() %}
-                    <strong>{{ key }}:</strong><p>{{ value }}</p>
-                {% endfor %}
-            {% endfor %}
+        <div class="entry" style="text-align: justify-all">
+            <h1 class="title-dashed">{{ title }}</h1>
 
-            <video class="video_player center" id="video_player" controls>
-                <source src="{{ media }}">
-            </video>
-
-                <div class="footer">
-                    <form class="ym-form" method="POST">
-                        <div class="ym-fbox">
-                            <div class="ym-fbox-wrap ym-grid">
-                                {% for s in sort_by %}
-                                    <a style="min-width: 59px; margin-top: 2em; text-align: center" data-ep_start="{{ s.start }}"
-                                       data-ep_end="{{ s.end }}" class="ym-button sort_by" href="#">
-                                        {{ s.start }}- {{ s.end }}</a>
+            <div class="inner" style="text-align: center">
+                <p>Press to Alt + L to toggle Anime Info.</p>
+                <video class="video_player center" id="video_player" controls>
+                    <source src="{{ media }}">
+                </video>
+                <form method="POST">
+                        {% for s in sort_by %}
+                            <a style="min-width: 59px; margin-top: 2em; text-align: center" data-ep_start="{{ s.start }}"
+                               data-ep_end="{{ s.end }}" href="#">
+                                {{ s.start }}-{{ s.end }}</a>
+                        {% endfor %}
+                            <div id="list">
+                                {% for item in episodes | reverse %}
+                                    {% for key, value in item.items() %}
+                                        <a id="{{ title }}-episode-{{ key | replace("EP ","") }}" style="min-width: 59px; margin-top: 2em" href="/player/{{ title }}/{{ value }}">{{ key }}</a>
+                                    {% endfor %}
                                 {% endfor %}
-                            </div>
-                           <center>
 
-                               <div class="ym-fbox-wrap ym-grid" id="list">
-                                   {% for item in episodes | reverse %}
-                                       {% for key, value in item.items() %}
-                                           <a id="{{ title }}-episode-{{ key | replace("EP ","") }}" style="min-width: 59px; margin-top: 2em" class="ym-button ym-primary save ym-close" href="/player/{{ title }}/{{ value }}">{{ key }}</a>
-                                       {% endfor %}
-                                   {% endfor %}
-
-                               </div>
-                           </center>
-
-                        </div>
-                    </form>
+                    </div>
+                </form>
+        </div>
+        </div>
+            <div id="info" class="content" style="text-align: justify-all; display: none">
+                <h1 class="title-dashed">ANIME INFO</h1>
+                <div class="inner" style="text-align: justify-all">
+                    {%  for item  in info %}
+                        {% for key, value in item.items() %}
+                            <strong>{{ key }}:</strong><p>{{ value }}</p>
+                        {% endfor %}
+                    {% endfor %}
                 </div>
-        </section>
-
+            </div>
     <script>
         let db = new PouchDB('episodes')
+        let links = false
         $('.sort_by').on('click', function (e){
             e.preventDefault();
             let html = ""
             for(let i = Number(this.dataset.ep_start); i <= Number(this.dataset.ep_end); ++i){
                 if (i > 0){
-                    html += `<a style="min-width: 59px; margin-top: 2em" class="ym-button ym-primary save ym-close" href="/player/{{ title }}/{{ title }}-episode-${i}">EP ${i}</a>`
+                    html += `<a style="min-width: 59px; margin-top: 2em" href="/player/{{ title }}/{{ title }}-episode-${i}">EP ${i}</a>`
                 }
             }
             $("#list").html(html)
@@ -62,6 +57,20 @@
             let ep_num = String(window.location).slice(-1)
             let series = String(window.location.pathname).split('/')[2]
             let vid = document.getElementById('video_player')
+
+
+            document.addEventListener('keydown', function (e){
+                if(e.altKey && e.key === "l"){
+                    links = !links
+                }
+                if(links){
+                    $("#info").show()
+                    $("#info").draggable()
+                }else {
+                    $("#info").hide()
+                }
+            })
+
             vid.addEventListener('timeupdate', function (e){
                 let current_time = parseInt(e.target.currentTime) / 60
                 let duration = parseInt(e.target.duration) / 60
@@ -108,8 +117,9 @@
                 selector: {episode_series: series},
                 fields: ['_id', 'episode_series', 'episode_link', 'episode_num']
             }).then(function (result){
+                console.log(result)
                 $.each(result.docs, function (key, value){
-                    $("#{{ title }}-episode-"+value['episode_num']).removeClass('ym-primary ym-close').addClass('ym-success ym-save')
+                    $("#{{ title }}-episode-"+value['episode_num']).css('text-decoration', "line-through")
                 })
             }).catch(function (err){
                 console.log(err)

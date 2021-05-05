@@ -49,6 +49,8 @@ def home():
             break
     return render_template("home.html", entries=data, month=Entries(result), navlinks=navlinks,
                            now=datetime.date(datetime.now()))
+    # return render_template("home.html")
+
 
 
 @app.route('/entry/<string:id>/<string:title>')
@@ -143,6 +145,7 @@ def playAnime(name, episode):
     sort_by['sort_by'].pop(0)
     return render_template("player.html", info=series['info'], episodes=series['episodes'], title=name,
                            media=media["source"][0]['file'], sort_by=sort_by['sort_by'])
+
 
 
 if __name__ == '__main__':

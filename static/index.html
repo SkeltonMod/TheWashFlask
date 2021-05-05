@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mac OS 8.1</title>
+  <link rel="shortcut icon" href="img/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="base.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+<body>
+  <noscript><p><em>This page requires JavaScript.</em></p></noscript>
+  <div id="content" class="content">
+      <h1 class="title-dashed">The Wash</h1>
+      <div class="control-box close-box"><a class="control-box-inner"></a></div>
+      <div class="inner" style="text-align: center">
+          <div class="icon" style="text-align: center"><img src="img/bomb.png" /></div>
+
+          <ul>
+              <li class="s">Press to toggle Archives.</li>
+          </ul>
+      </div>
+
+ </div>
+  <div id="sidebar" class="content" style="display: none">
+      <h1 class="title-dashed">Posts by month</h1>
+      <div class="inner">
+
+
+      </div>
+
+  </div>
+<script>
+    document.addEventListener ("keydown", function (zEvent) {
+        if (zEvent.ctrlKey  && zEvent.key === "m") {  // case sensitive
+            $("#sidebar").show()
+            $( "#sidebar" ).draggable({ handle: "h1.title-dashed" });
+        }
+    });
+</script>
+</body>
+</html>

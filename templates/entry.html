@@ -1,14 +1,19 @@
 {% extends 'layout.html' %}
 {% block title %}{{ entry.title }}{% endblock %}
 {% block body %}
-    <div id="entries" class="ym-wbox child">
-        <section class="box info">
-            <strong id="title">{{ entry.title }}</strong>
+    <div class="entry" style="text-align: justify-all">
+        <h1 class="title-dashed">{{ entry.title }}</h1>
+        <div class="inner" style="text-align: justify-all">
+
             <div id="post-body">
                 <p id="placeholder">{% filter markdown %} {{ body | safe}} {% endfilter %} </p></div>
-            <p>Posted on: <strong id="date">{{ entry.date }}</strong> </p>
-            <p>Posted by: <strong id="author">{{ entry.author }}</strong> </p>
+            <p>Posted on: {{ entry.date }}</p>
+            <p>Posted by: {{ entry.author }}</p>
             <a href="/" class="post-link"><h5 class="readmore ym-g20">Go Back</h5></a>
-        </section>
+        </div>
     </div>
+    <script>
+
+
+    </script>
 {% endblock %}

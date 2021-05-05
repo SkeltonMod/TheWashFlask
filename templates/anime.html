@@ -2,51 +2,19 @@
 {% block title %}Anime{% endblock %}
 
 {% block body %}
-    <div id="anime" class="ym-wbox child">
-        <section class="box info">
-            <div id="wash-body">
-                <div style="text-align: center;">
-                    <strong style="text-transform: uppercase"> Sideloader Anime Bullshit</strong><br>
-
-
-                    <hr>
-                    {% from 'includes/_formhelper.html' import render_field %}
-                    <form class="ym-form" style="text-align: center !important;" method="post">
-                        <div class="ym-fbox">
-                            <div class="ym-fbox-wrap ym-grid">
-                                <div class="ym-g50 ym-gl">
-                                    <div class="ym-gbox-left">
-                                        <label>
-                                            {{ render_field(form.title, id="title", placeholder="Find Anime") }}
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="ym-g50 ym-gl">
-                                    <div class="ym-gbox-right">
-                                        <input type="submit" value="Search" class="ym-button ym-primary ym-small">
-                                    </div>
-                                </div>
-                            </div>
-
-
-                        </div>
-                    </form>
-                </div>
-
-                <div class="ym-grid linearize-level-2" >
-                    <div id="rss-list" class="ym-grid linearize-level-2 center">
-                        {% for entry in series %}
-                            <div class="ym-g50 ym-gl">
-                                <div class="ym-gbox">
-                                    <section class="box info">
-                                       <a href="/player/{{ entry.serialized_name }}/{{ entry.serialized_name }}-episode-1">{{ entry.title }}</a><br>
-                                    </section>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        </section>
+    <div class="content" style="text-align: justify-all">
+        <h1 class="title-dashed">Anime Sideloader</h1>
+        <div class="inner" style="text-align: justify-all">
+            {% from 'includes/_formhelper.html' import render_field %}
+            <form method="post">
+                {{ render_field(form.title, id="title", placeholder="Find Anime") }}
+                <input type="submit" value="Search" class="ym-button ym-primary ym-small">
+            </form>
+            <hr>
+            {% for entry in series %}
+                <a href="/player/{{ entry.serialized_name }}/{{ entry.serialized_name }}-episode-1">{{ entry.title }}</a>
+                <br><hr>
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}

@@ -1,27 +1,20 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <div class="ym-wbox child">
-        <section class="box info">
-            <h3>Post details</h3>
+
+    <div class="entry" style="text-align: justify-all">
+        <h1 class="title-dashed">Editor</h1>
+        <div class="inner" style="text-align: justify-all">
             {% from 'includes/_formhelper.html' import render_field %}
-            <form id="post-info" class="ym-form" method="POST" action="">
-
-                <div class="ym-fbox ym-g40">
-                    {{ render_field(form.title, id="title", type="text", placeholder="Title") }}
-                    {{ render_field(form.date, id="content-date", type="date") }}
-                    {{ render_field(form.author, id="author", value="Washerman") }}
-                    <button type="submit" style="margin-top: 2em">Submit</button>
-
-                </div>
-
-                <section class="box">
-                    {{ render_field(form.entry, id="content-edit") }}
-                </section>
+            <form method="POST">
+                {{ render_field(form.title, id="title", type="text", placeholder="Title") }}
+                {{ render_field(form.date, id="content-date", type="date") }}
+                {{ render_field(form.author, id="author", value="Washerman") }}
+                <button type="submit" style="margin-top: 2em">Submit</button>
+                {{ render_field(form.entry, id="content-edit") }}
 
             </form>
-        </section>
-
+        </div>
     </div>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
     <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
