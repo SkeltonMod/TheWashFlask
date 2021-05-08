@@ -11,7 +11,7 @@
             <div class="icon" style="text-align: center"><img src="{{  url_for('static', filename='img/bomb.png') }}"  alt="img"/></div>
 
             <ul>
-                <li class="s">Press to Alt + L to toggle Archived Posts.</li><br>
+                <li class="s">Press Alt + L to toggle Archived Posts.</li><br>
                 {% for entry in entries %}
                     <li id="{{ entry.id }}" class="s"><a href="/entry/{{ entry.id }}/{{ entry.file_name }}"> {{ entry.title }}</a></li>
                 {% endfor %}

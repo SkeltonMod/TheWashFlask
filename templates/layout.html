@@ -16,20 +16,16 @@
 </head>
 <body>
 
+<div class="header">
+    <h1 class="title-dashed">Links</h1>
+    <div class="inner" style="text-align: justify-all">
+        <a href="/">>Home</a> |
+        <a href="/wash">>Wash</a>|
+    </div>
+</div>
+
 
 <div id="content">
-
-{#    {% with messages = get_flashed_messages() %}#}
-{#        {% if messages %}#}
-{#            <div class="ym-wbox">#}
-{#                <h1 class="flashes success">#}
-{#                    {% for message in messages %}#}
-{#                        {{ message }}#}
-{#                    {% endfor %}#}
-{#                </h1>#}
-{#            </div>#}
-{#        {% endif %}#}
-{#    {% endwith %}#}
     {% block body %}{% endblock %}
 
 </div>
@@ -38,6 +34,9 @@
 
 
 </body>
+<footer class="footer" style="color: #FFFFFF">
+    Created by Elijah Abgao; Powered by Depression™
+</footer>
 </html>
 
 
