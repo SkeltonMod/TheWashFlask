@@ -35,7 +35,7 @@ cors = CORS(app)
 @app.route('/')
 def home():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM content ORDER BY date DESC")
+    cur.execute("SELECT * FROM content ORDER BY id DESC")
     result = list(cur.fetchall())
     data = list()
     navlinks = getLinks()
@@ -49,7 +49,6 @@ def home():
             break
     return render_template("home.html", entries=data, month=Entries(result), navlinks=navlinks,
                            now=datetime.date(datetime.now()))
-    # return render_template("home.html")
 
 
 
