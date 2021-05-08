@@ -85,41 +85,73 @@ class AnimeSearch(Form):
     title = StringField("", [validators.length(min=1)])
 
 
-@app.route('/editor', methods=['POST', 'GET'])
-def add_entry():
-    form = EntryForm(request.form)
-    if request.method == "POST" and form.validate():
-        # Get the Data
-        title = form.title.data
-        entry = form.entry.data
-        date = datetime.strptime(form.date.data, "%Y-%m-%d")
-        author = form.author.data
-        # Append to File
+# @app.route('/editor', methods=['POST', 'GET'])
+# def add_entry():
+#     form = EntryForm(request.form)
+#     if request.method == "POST" and form.validate():
+#         # Get the Data
+#         title = form.title.data
+#         entry = form.entry.data
+#         date = datetime.strptime(form.date.data, "%Y-%m-%d")
+#         author = form.author.data
+#         # Append to File
+#
+#         file_name = title.replace(" ", "_")
+#
+#         try:
+#             file = open(os.getcwd() + "/entries/" + file_name + ".md", "x")
+#         except FileExistsError:
+#             count = len([name for name in os.listdir("./entries/") if file_name in name])
+#             file_name = f"{file_name}{count}"
+#             file = open(f"{os.getcwd()}/entries/{file_name}.md", "x")
+#             file.write(entry)
+#             file.close()
+#         else:
+#             file.write(entry)
+#             file.close()
+#
+#         # generate sort_id
+#         sort_id = date.strftime("%m%Y").lstrip("0").replace(" 0", "")
+#         cursor = mysql.connection.cursor()
+#         cursor.execute("INSERT INTO content(`file_name`, `date`, `title`, `author`, `sort_id`) VALUES(%s,%s,%s,%s,%s)",
+#                        (file_name, date, title, author, sort_id))
+#         mysql.connection.commit()
+#         flash("Entry Added!", "success")
+#         cursor.close()
+#
+#     return render_template('editor.html', form=form)
 
-        file_name = title.replace(" ", "_")
 
-        try:
-            file = open(os.getcwd() + "/entries/" + file_name + ".md", "x")
-        except FileExistsError:
-            count = len([name for name in os.listdir("./entries/") if file_name in name])
-            file_name = f"{file_name}{count}"
-            file = open(f"{os.getcwd()}/entries/{file_name}.md", "x")
-            file.write(entry)
-            file.close()
-        else:
-            file.write(entry)
-            file.close()
+@app.route('/getfile', methods=['POST', 'GET'])
+def poll_entry():
+    title = request.json['name']
+    entry = request.json['content']
+    date = datetime.strptime(request.json['date'], "%Y-%m-%d")
+    author = request.json['author']
+    # Append to File
 
-        # generate sort_id
-        sort_id = date.strftime("%m%Y").lstrip("0").replace(" 0", "")
-        cursor = mysql.connection.cursor()
-        cursor.execute("INSERT INTO content(`file_name`, `date`, `title`, `author`, `sort_id`) VALUES(%s,%s,%s,%s,%s)",
-                       (file_name, date, title, author, sort_id))
-        mysql.connection.commit()
-        flash("Entry Added!", "success")
-        cursor.close()
+    file_name = title.replace(" ", "_")
 
-    return render_template('editor.html', form=form)
+    try:
+        file = open(os.getcwd() + "/entries/" + file_name + ".md", "x")
+    except FileExistsError:
+        count = len([name for name in os.listdir("./entries/") if file_name in name])
+        file_name = f"{file_name}{count}"
+        file = open(f"{os.getcwd()}/entries/{file_name}.md", "x")
+        file.write(entry)
+        file.close()
+    else:
+        file.write(entry)
+        file.close()
+
+    # generate sort_id
+    sort_id = date.strftime("%m%Y").lstrip("0").replace(" 0", "")
+    cursor = mysql.connection.cursor()
+    cursor.execute("INSERT INTO content(`file_name`, `date`, `title`, `author`, `sort_id`) VALUES(%s,%s,%s,%s,%s)",
+                    (file_name, date, title, author, sort_id))
+    mysql.connection.commit()
+    cursor.close()
+    return f"Data: {request.json}"
 
 
 @app.route('/wash')
