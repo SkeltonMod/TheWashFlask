@@ -355,57 +355,35 @@ blockquote, code{
     clear: both;
 }
 
-@media screen and (max-width: 420px) {
+@media screen and (max-width: 480px) {
     .video_player{
         width: 240px;
         height: 120px;
     }
-    .entry {
-        position: relative;
-        z-index: 2;
-        font-size: 12px;
-        font-weight: normal;
-        width: auto;
+
+    .entry{
         height: auto;
-        margin-top: 2em;
-        border: 1px solid #111;
-        background: #ccc;
-        box-shadow:
-                1px 2px #111,
-                inset 1px 1px 0px 0px #fff,
-                inset -1px -1px 0px 0px #999;
+        width: auto;
+
+        margin-left: 0;
+        margin-right: 0;
     }
-    .entry .inner {
-        overflow-x:hidden;
+
+    .entry .inner{
+        max-width: 700px;
         word-wrap: break-word;
-        margin: 2px 4px 4px 4px;
-        border: 1px solid #111;
-        background-color: #fff;
-        font-family: 'ProggyCleanTT', serif;
-        font-size: 16px;
-        box-shadow:
-                -1px -1px 0px 0px #999,
-                1px 1px 0px 0px #fff,
-                inset 1px 1px 0px 0px #fff,
-                inset -1px -1px 0px 0px #999;
+        overflow-x: hidden;
+    }
+
+    html, body{
+        overflow-x: hidden;
+        overflow-y: scroll;
     }
 
 
-    body {
-        -moz-user-select: none;
-        -webkit-user-select: none;
-        background-image: url("img/patterns/128.png");
-        background-repeat: repeat;
-        margin: 0;
-        height: 100%;
-        font-family: 'ChicagoFLF', 'Times New Roman', 'Georgia', serif;
-        font-size: 12px;
-        font-weight: normal;
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-        overflow-x:hidden ;
+
+    footer{
+        margin-right: 2em; !important;
     }
-    body::-webkit-scrollbar{
-        display: none;
-    }
+
 }
