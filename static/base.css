@@ -360,5 +360,20 @@ blockquote, code{
         width: 240px;
         height: 120px;
     }
+    .entry .inner {
+        overflow-y: scroll;
+        margin: 2px 4px 4px 4px;
+        border: 1px solid #111;
+        background-color: #fff;
+        font-family: 'ProggyCleanTT', serif;
+        font-size: 16px;
+        box-shadow:
+                -1px -1px 0px 0px #999,
+                1px 1px 0px 0px #fff,
+                inset 1px 1px 0px 0px #fff,
+                inset -1px -1px 0px 0px #999;
 
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
 }
