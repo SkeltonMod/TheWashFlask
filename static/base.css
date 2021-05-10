@@ -364,9 +364,6 @@ blockquote, code{
     .entry{
         height: auto;
         width: auto;
-
-        margin-left: 0;
-        margin-right: 0;
     }
 
     .entry .inner{
