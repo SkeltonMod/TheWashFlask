@@ -383,4 +383,7 @@ blockquote, code{
         margin-right: 2em; !important;
     }
 
+    body::-webkit-scrollbar{
+        display: none;
+    }
 }
