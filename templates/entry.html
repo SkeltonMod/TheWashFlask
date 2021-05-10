@@ -1,9 +1,9 @@
 {% extends 'layout.html' %}
 {% block title %}{{ entry.title }}{% endblock %}
 {% block body %}
-    <div class="entry" style="text-align: justify-all">
+    <div class="entry">
         <h1 class="title-dashed">{{ entry.title }}</h1>
-        <div class="inner" style="text-align: justify-all">
+        <div class="inner" style="text-align: justify-all !important;">
 
             <div id="post-body">
                 <p id="placeholder">{% filter markdown %} {{ body | safe}} {% endfilter %} </p></div>

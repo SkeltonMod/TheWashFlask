@@ -10,7 +10,7 @@ import feedparser as fp
 import constants
 from flask_cors import CORS
 from wtforms import Form, StringField, TextAreaField, validators
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, join_room, leave_room
 
 CONFIG = {
     "DEBUG": True,
@@ -32,7 +32,8 @@ cache = Cache(app)
 app.secret_key = "malim123HAHAHAHAOTEN09292"
 cors = CORS(app)
 socketio = SocketIO(app)
-
+channel_id = 0
+channel_list = list()
 
 @app.route('/')
 def home():
@@ -142,19 +143,7 @@ def chat():
                 return render_template('wd_chat_admin.html')
         return render_template('wd_chat.html', admin = False)
 
-@socketio.on('send message')
-def send_message(message):
-    socketio.emit('recieve message', message)
 
-@socketio.on('create channel')
-def create_channel(username, user_id):
-    channel_data = {
-        "channel_key": generate_channel_id(),
-        "channel_user" : username,
-        "channel_user_id": user_id
-    }
-    print(f"Channel created {channel_data}")
-    socketio.emit('channel created', channel_data)
 
 if __name__ == '__main__':
     app.run()

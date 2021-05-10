@@ -12,7 +12,8 @@
                             <div class="card-body">
                                 <h4 class="card-title">Auto generated message</h4>
                                 <p class="card-text text-white">Facebook chat wrapper v1 Beta</p>
-                                <p class="card-text text-white">Currently serving user: <span id="username">Gustav</span> (<span id="user_id">498902488445</span>)</p>
+                                <p class="card-text text-white">Currently in: <span id="channel_key"></span></p>
+                                <p class="card-text text-white">ROOM ID: <span id="channel_id"></span></p>
                                 <p class="card-text text-white">Please Note that you will be warned 3 times
                                     before getting disconnected</p>
                                 <p class="card-text text-white">To initiate a query again please talk to the
@@ -32,51 +33,14 @@
             </form>
 
             <div class="row justify-content-center">
-                <button  class="btn btn-warning mr-3">Warn!</button>
                 <button id="disconnect" class="btn btn-danger mr-3">Disconnect!</button>
-                <button class="btn btn-info mr-3">Buzz!</button>
             </div>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script src="https://cdn.socket.io/4.0.2/socket.io.min.js" integrity="sha384-Bkt72xz1toXkj/oEiOgkQwWKbvNYxTNWMqdon3ejP6gwq53zSo48nW5xACmeDV0F" crossorigin="anonymous"></script>
     <script>
-    let socket = null
-    $(function(){
-        // simple implementation for now
-        socket = io.connect(`${location.protocol}//${document.domain}:${location.port}`)
-
-        if(!localStorage.getItem('username') && !localStorage.getItem('channel_key') && !localStorage.getItem('user_id')){
-            socket.emit('create channel', generate_random_string(), generate_random_string())
-        }else{
-            console.log(` Data Found: ${localStorage.getItem('username')} \n ${localStorage.getItem('channel_key')} \n ${localStorage.getItem('user_id')}`)
-            $("#user_id").text(localStorage.getItem('user_id'))
-            $("#username").text(localStorage.getItem('username'))
-        }
-
-        socket.on('channel created', channel_data =>{
-            localStorage.setItem("username",channel_data.channel_user)
-            localStorage.setItem("user_id",channel_data.channel_user_id)
-            localStorage.setItem("channel_key", channel_data.channel_key)
-            console.log(` Data Created: ${localStorage.getItem('username')}\n  ${localStorage.getItem('channel_key')}\n${localStorage.getItem('user_id')}`)
-            $("#user_id").text(localStorage.getItem('user_id'))
-            $("#username").text(localStorage.getItem('username'))
-        })
-    })
-    $("#send").on('click', function (e){
-        e.preventDefault()
-        console.log($("#message").val())
-        socket.emit('send message', $("#message").val())
-    })
-
-    $("#disconnect").on('click', function (e){
-        e.preventDefault()
-        console.warn('Disconnecting!')
-        localStorage.removeItem("username")
-        localStorage.removeItem("user_id")
-        localStorage.removeItem("channel_key")
-    })
-
+    let socket = io.connect(`${location.protocol}//${document.domain}:${location.port}`)
 
     // for now
     function generate_random_string(){
