@@ -97,14 +97,12 @@ a {
     width: auto;
     height: auto;
     margin-top: 2em;
-
     border: 1px solid #111;
     background: #ccc;
     box-shadow:
             1px 2px #111,
             inset 1px 1px 0px 0px #fff,
             inset -1px -1px 0px 0px #999;
-
 
 }
 
