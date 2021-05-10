@@ -1,0 +1,64 @@
+{% extends 'layout_underground.html' %}
+
+{% block body %}
+
+    <div class="container">
+        <div class="row">
+            <div class="jumbotron my-4 justify-content-center" id="messagebox" style="height: auto !important; overflow: auto; max-height: 470px !important;">
+                <div class="d-flex flex-row ">
+                    <div class="col-lg-4">
+                        <div class="card text-white bg-info mb-3">
+                            <div class="card-header">System</div>
+                            <div class="card-body">
+                                <h4 class="card-title">Auto generated message</h4>
+                                <p class="card-text text-white">Welcome Admin</p>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="jumbotron mb-2">
+            <form class="form-inline justify-content-center">
+                <label class="sr-only" for="sendMessage"></label>
+                <textarea type="text" class="form-control mb-2 mr-sm-2 bg-dark col-lg-10" id="message" style="resize: none" placeholder="Message"></textarea>
+                <button type="button" id="send" class="btn btn-primary btn-lg mb-2">Submit</button>
+            </form>
+
+            <div class="row justify-content-center">
+                <button  class="btn btn-warning mr-3">Warn!</button>
+                <button id="disconnect" class="btn btn-danger mr-3">Disconnect!</button>
+                <button class="btn btn-info mr-3">Buzz!</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://cdn.socket.io/4.0.2/socket.io.min.js" integrity="sha384-Bkt72xz1toXkj/oEiOgkQwWKbvNYxTNWMqdon3ejP6gwq53zSo48nW5xACmeDV0F" crossorigin="anonymous"></script>
+    <script>
+    let socket = null
+    $(function(){
+        // simple implementation for now
+        socket = io.connect(`${location.protocol}//${document.domain}:${location.port}`)
+
+        if(!localStorage.getItem('admin_username') && !localStorage.getItem('admin_channel_key') && !localStorage.getItem('admin_user_id')){
+            socket.emit('create channel', "Admin", "MALIM890")
+        }else{
+            console.log(` Data Found: ${localStorage.getItem('admin_username')} \n ${localStorage.getItem('admin_channel_key')} \n ${localStorage.getItem('admin_user_id')}`)
+        }
+
+        socket.on('channel created', channel_data =>{
+            localStorage.setItem("admin_username",channel_data.channel_user)
+            localStorage.setItem("admin_user_id",channel_data.channel_user_id)
+            localStorage.setItem("admin_channel_key", channel_data.channel_key)
+            console.log(` Data Created: ${localStorage.getItem('admin_channel_key')}\n  ${localStorage.getItem('admin_username')}\n${localStorage.getItem('admin_user_id')}`)
+        })
+    })
+    $("#send").on('click', function (e){
+        e.preventDefault()
+        console.log($("#message").val())
+        socket.emit('send message', $("#message").val())
+    })
+
+    </script>
+{% endblock %}

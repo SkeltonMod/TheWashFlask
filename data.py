@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import constants
+import random
 
 
 def Entries(arr):  # ACCEPTS LIST
@@ -34,6 +35,15 @@ def tally_months(arr):
         c.append({"tally": f"{split[1]}, {split[2]} ({b[x]})", "sort_id": split[0]})
 
     return c
+
+
+def generate_channel_id():
+    saltable_string = "1234567890abcdefghijklmnopqrstuvwxyz"
+    channel_key = ""
+
+    for x in range(20):
+        channel_key += saltable_string[random.randint(0, 35)]
+    return channel_key
 
 
 def search(keyword):
@@ -112,3 +122,5 @@ def download(keyword):
     for captcha in bs.find_all("form", {"id": "challenge-form"}):
         final_link.append({"download_link": captcha['action'], "captcha_form": captcha})
     return final_link
+
+

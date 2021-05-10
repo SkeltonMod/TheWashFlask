@@ -1,15 +1,16 @@
-from flask import Flask, redirect, render_template, request, url_for, flash
+from flask import Flask, redirect, render_template, request, url_for, flash, jsonify
 from flask_mysqldb import MySQL
 from flaskext.markdown import Markdown
 import os
 from datetime import datetime
-from data import Entries, search, getAnime, play, download
+from data import Entries, search, getAnime, play, download, generate_channel_id
 from bs4 import BeautifulSoup
 from flask_caching import Cache
 import feedparser as fp
 import constants
 from flask_cors import CORS
 from wtforms import Form, StringField, TextAreaField, validators
+from flask_socketio import SocketIO
 
 CONFIG = {
     "DEBUG": True,
@@ -30,6 +31,7 @@ mysql = MySQL(app)
 cache = Cache(app)
 app.secret_key = "malim123HAHAHAHAOTEN09292"
 cors = CORS(app)
+socketio = SocketIO(app)
 
 
 @app.route('/')
@@ -49,7 +51,6 @@ def home():
             break
     return render_template("home.html", entries=data, month=Entries(result), navlinks=navlinks,
                            now=datetime.date(datetime.now()))
-
 
 
 @app.route('/entry/<string:id>/<string:title>')
@@ -73,52 +74,8 @@ def getLinks():
     return data
 
 
-class EntryForm(Form):
-    title = StringField("", [validators.Length(min=1, max=150), validators.DataRequired()])
-    date = StringField("", [validators.Length(min=1, max=150)])
-    author = StringField("", [validators.Length(min=1)], render_kw={"readonly": True})
-    entry = TextAreaField("", [validators.Length(min=1)])
-
-
 class AnimeSearch(Form):
     title = StringField("", [validators.length(min=1)])
-
-
-# @app.route('/editor', methods=['POST', 'GET'])
-# def add_entry():
-#     form = EntryForm(request.form)
-#     if request.method == "POST" and form.validate():
-#         # Get the Data
-#         title = form.title.data
-#         entry = form.entry.data
-#         date = datetime.strptime(form.date.data, "%Y-%m-%d")
-#         author = form.author.data
-#         # Append to File
-#
-#         file_name = title.replace(" ", "_")
-#
-#         try:
-#             file = open(os.getcwd() + "/entries/" + file_name + ".md", "x")
-#         except FileExistsError:
-#             count = len([name for name in os.listdir("./entries/") if file_name in name])
-#             file_name = f"{file_name}{count}"
-#             file = open(f"{os.getcwd()}/entries/{file_name}.md", "x")
-#             file.write(entry)
-#             file.close()
-#         else:
-#             file.write(entry)
-#             file.close()
-#
-#         # generate sort_id
-#         sort_id = date.strftime("%m%Y").lstrip("0").replace(" 0", "")
-#         cursor = mysql.connection.cursor()
-#         cursor.execute("INSERT INTO content(`file_name`, `date`, `title`, `author`, `sort_id`) VALUES(%s,%s,%s,%s,%s)",
-#                        (file_name, date, title, author, sort_id))
-#         mysql.connection.commit()
-#         flash("Entry Added!", "success")
-#         cursor.close()
-#
-#     return render_template('editor.html', form=form)
 
 
 @app.route('/getfile', methods=['POST', 'GET'])
@@ -147,7 +104,7 @@ def poll_entry():
     sort_id = date.strftime("%m%Y").lstrip("0").replace(" 0", "")
     cursor = mysql.connection.cursor()
     cursor.execute("INSERT INTO content(`file_name`, `date`, `title`, `author`, `sort_id`) VALUES(%s,%s,%s,%s,%s)",
-                    (file_name, date, title, author, sort_id))
+                   (file_name, date, title, author, sort_id))
     mysql.connection.commit()
     cursor.close()
     return f"Data: {request.json}"
@@ -178,6 +135,26 @@ def playAnime(name, episode):
                            media=media["source"][0]['file'], sort_by=sort_by['sort_by'])
 
 
+@app.route('/api/wd_chat', methods=['POST', 'GET'])
+def chat():
+        if request.method == "GET":
+            if request.args.get('secret_key') == "8930493844443":
+                return render_template('wd_chat_admin.html')
+        return render_template('wd_chat.html', admin = False)
+
+@socketio.on('send message')
+def send_message(message):
+    socketio.emit('recieve message', message)
+
+@socketio.on('create channel')
+def create_channel(username, user_id):
+    channel_data = {
+        "channel_key": generate_channel_id(),
+        "channel_user" : username,
+        "channel_user_id": user_id
+    }
+    print(f"Channel created {channel_data}")
+    socketio.emit('channel created', channel_data)
 
 if __name__ == '__main__':
     app.run()

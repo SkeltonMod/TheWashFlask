@@ -23,6 +23,7 @@
     <orderEntry type="library" name="jquery-ui" level="application" />
     <orderEntry type="library" name="egg.js" level="application" />
     <orderEntry type="library" name="98.css" level="application" />
+    <orderEntry type="library" name="socket.io" level="application" />
   </component>
   <component name="PackageRequirementsSettings">
     <option name="keepMatchingSpecifier" value="false" />
