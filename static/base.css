@@ -374,7 +374,9 @@ blockquote, code{
 
     html, body{
         overflow-x: hidden;
-        overflow-y: scroll;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        overflow-x:hidden ;
     }
 
 
