@@ -373,10 +373,10 @@ blockquote, code{
     }
 
     html, body{
+        overflow-y: auto;
         overflow-x: hidden;
         -ms-overflow-style: none;
         scrollbar-width: none;
-        overflow-x:hidden ;
     }
 
 
