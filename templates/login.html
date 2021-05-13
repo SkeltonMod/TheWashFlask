@@ -1,0 +1,44 @@
+{% extends 'layout_underground.html' %}
+
+{% block body %}
+
+    <div class="container">
+        <div class="row justify-content-center my-3">
+
+            <div class="col-lg-3">
+                <div class="col-sm">
+                    Mundanus...
+                </div>
+                <div class="col-sm">
+                    Absurdum...
+                </div>
+                <div class="col-sm">
+                    Mendacium...
+                </div>
+                <div class="col-sm">
+                    Me miserum!...
+                </div>
+            </div>
+
+        </div>
+        <div class="row justify-content-center my-6">
+            <div class="col-lg-6">
+                <div class="card text-white bg-danger mb-3">
+                    <div class="card-header ">AUTHENTICATION REQUIRED</div>
+
+                    <div class="card-body">
+                        <div class="card-title text-white">Please Enter Admin Credentials Before Proceeding!</div>
+                        {% from 'includes/_formhelper.html' import render_field %}
+                        <form method="POST">
+                            {{ render_field(form.username, id="username", type="text", class="form-control text-white mb-2 mr-sm-2 bg-dark col-lg-10", placeholder="Username") }}
+                            {{ render_field(form.password, id="password", class="form-control text-white mb-2 mr-sm-2 bg-dark col-lg-10", type="password", placeholder="Password") }}
+                            <button type="submit" class="btn btn-info" id="login">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+{% endblock %}

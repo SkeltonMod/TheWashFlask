@@ -9,11 +9,11 @@
                     <div class="col-lg-4">
                         <div class="card text-white bg-info mb-3">
                             <div class="card-header">System</div>
-                            <div class="card-body">
+                            <div class="card-body" id="system_body">
                                 <h4 class="card-title">Auto generated message</h4>
                                 <p class="card-text text-white">Facebook chat wrapper v1 Beta</p>
-                                <p class="card-text text-white">Currently in: <span id="channel_key"></span></p>
-                                <p class="card-text text-white">ROOM ID: <span id="channel_id"></span></p>
+                                <p class="card-text text-white">Currently in: {{ room_id }}</p>
+                                <p class="card-text text-white">ROOM ID: {{ user_id }}</p>
                                 <p class="card-text text-white">Please Note that you will be warned 3 times
                                     before getting disconnected</p>
                                 <p class="card-text text-white">To initiate a query again please talk to the
@@ -26,12 +26,12 @@
             </div>
         </div>
         <div class="jumbotron mb-2">
-            <form class="form-inline justify-content-center">
+            <div class="form-inline justify-content-center">
                 <label class="sr-only" for="sendMessage"></label>
-                <textarea type="text" class="form-control mb-2 mr-sm-2 bg-dark col-lg-10" id="message" style="resize: none" placeholder="Message"></textarea>
-                <button type="button" id="send" class="btn btn-primary btn-lg mb-2">Submit</button>
-            </form>
+                <label for="message"></label><textarea type="text" class="form-control mb-2 mr-sm-2 bg-dark col-lg-10" id="message" style="resize: none" placeholder="Message"></textarea>
 
+                <button type="button" id="send" class="btn btn-success">Send</button>
+            </div>
             <div class="row justify-content-center">
                 <button id="disconnect" class="btn btn-danger mr-3">Disconnect!</button>
             </div>
@@ -40,17 +40,80 @@
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script src="https://cdn.socket.io/4.0.2/socket.io.min.js" integrity="sha384-Bkt72xz1toXkj/oEiOgkQwWKbvNYxTNWMqdon3ejP6gwq53zSo48nW5xACmeDV0F" crossorigin="anonymous"></script>
     <script>
-    let socket = io.connect(`${location.protocol}//${document.domain}:${location.port}`)
+        let socket = io.connect('http://' + document.domain + ':' + location.port)
 
-    // for now
-    function generate_random_string(){
-        let salt_table = "1234567890abcdefghijklmnopqrstuvwxyz"
-        let random_string = ""
-        for(let i = 0; i <= 10; ++i){
-            random_string += salt_table[Math.floor(Math.random() * 35)]
+
+        $(document).ready(function (){
+            if(!localStorage.getItem('room_id') && !localStorage.getItem('user_id')){
+                localStorage.setItem('user_id', "{{ user_id }}")
+                localStorage.setItem('room_id', "{{ room_id }}")
+            }
+
+            $("#send").on('click', function (){
+                let message = $("#message")
+                prevent_blank_text()
+                let message_data = {message: message.val(), timestamp: new Date().toDateString(), user_id:"{{ user_id }}", room_id:"{{ room_id }}"}
+                console.log(message_data)
+
+                message.val('')
+                socket.emit('send', {message_data})
+            })
+
+            socket.on('connect', function (){
+                socket.emit('join channel', {})
+            })
+
+
+            socket.emit('create channel',{"user_id": "{{ user_id }}", "room_id": "{{ room_id }}"})
+            socket.on('broadcast message', function (data){
+                $("#messagebox").append(`
+                <div class="d-flex flex-row ">
+                    <div class="col-lg-4">
+                        <div class="card text-white bg-dark mb-3">
+                            <div class="card-header">${data.message_data['user_id']}</div>
+                            <div class="card-body">
+                                <h4 class="card-title">${data.message_data['timestamp']}</h4>
+                                <p class="card-text text-white">${data.message_data['message']}</p>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>`)
+            })
+
+        })
+
+
+
+        $("#disconnect").on('click', function (e){
+            e.preventDefault()
+            socket.emit('leave channel', {"user_id": "{{ user_id }}", "room_id": "{{ room_id }}"}, function (){
+                socket.disconnect()
+                localStorage.removeItem("user_id")
+                localStorage.removeItem("room_id")
+            })
+        })
+        function prevent_blank_text(){
+            $("#send").attr('disabled', true)
+
+            // pseudo validator
+            $("#message").on('keyup', function (e){
+                if ($("#message").val().length > 0){
+                    $("#send").attr('disabled', false)
+                }else{
+                    $("#send").attr('disabled', true)
+                }
+            })
         }
-        return random_string
-    }
+        function generate_random_string(is_num){
+            let salt_table = "1234567890abcdefghijklmnopqrstuvwxyz"
+            let salt_table_numeric = "123456789"
+            let random_string = ""
+            for(let i = 0; i <= 10; ++i){
+                random_string += is_num ? salt_table_numeric[Math.floor(Math.random() * 9)] : salt_table[Math.floor(Math.random() * 35)]
+            }
+            return random_string
+        }
 
-    </script>
+        </script>
 {% endblock %}

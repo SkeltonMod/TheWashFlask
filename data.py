@@ -37,12 +37,13 @@ def tally_months(arr):
     return c
 
 
-def generate_channel_id():
+def generate_channel_id(is_num=False):
     saltable_string = "1234567890abcdefghijklmnopqrstuvwxyz"
+    saltable_string_num = "1234567890"
     channel_key = ""
 
-    for x in range(20):
-        channel_key += saltable_string[random.randint(0, 35)]
+    for x in range(10):
+        channel_key += (saltable_string[random.randint(0, 35)] if is_num else saltable_string_num[random.randint(0, 9)])
     return channel_key
 
 

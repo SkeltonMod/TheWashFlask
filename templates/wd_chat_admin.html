@@ -8,10 +8,11 @@
                 <div class="d-flex flex-row ">
                     <div class="col-lg-4">
                         <div class="card text-white bg-info mb-3">
-                            <div class="card-header">System</div>
+                            <div class="card-header">{{ session.room }}</div>
                             <div class="card-body">
                                 <h4 class="card-title">Auto generated message</h4>
-                                <p class="card-text text-white">Welcome Admin</p>
+                                <p class="card-text text-white">Welcome {{ session.user }}</p>
+                                <p class="card-text text-white">Press Alt + L to Traverse through available rooms</p>
 
                             </div>
                         </div>
@@ -20,11 +21,11 @@
             </div>
         </div>
         <div class="jumbotron mb-2">
-            <form class="form-inline justify-content-center">
+            <div class="form-inline justify-content-center">
                 <label class="sr-only" for="sendMessage"></label>
                 <textarea type="text" class="form-control mb-2 mr-sm-2 bg-dark col-lg-10" id="message" style="resize: none" placeholder="Message"></textarea>
-                <button type="button" id="send" class="btn btn-primary btn-lg mb-2">Submit</button>
-            </form>
+                <button type="button" id="send" class="btn btn-success">Submit</button>
+            </div>
 
             <div class="row justify-content-center">
                 <button  class="btn btn-warning mr-3">Warn!</button>
@@ -36,29 +37,79 @@
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script src="https://cdn.socket.io/4.0.2/socket.io.min.js" integrity="sha384-Bkt72xz1toXkj/oEiOgkQwWKbvNYxTNWMqdon3ejP6gwq53zSo48nW5xACmeDV0F" crossorigin="anonymous"></script>
     <script>
-    let socket = null
-    $(function(){
-        // simple implementation for now
-        socket = io.connect(`${location.protocol}//${document.domain}:${location.port}`)
+        let socket = io.connect('http://' + document.domain + ':' + location.port)
+        $(document).ready(function (){
+            if(!localStorage.getItem('room_id') && !localStorage.getItem('user_id')){
+                localStorage.setItem('user_id', "{{ session.user }}")
+                localStorage.setItem('room_id', "{{ session.room}}")
+            }
 
-        if(!localStorage.getItem('admin_username') && !localStorage.getItem('admin_channel_key') && !localStorage.getItem('admin_user_id')){
-            socket.emit('create channel', "Admin", "MALIM890")
-        }else{
-            console.log(` Data Found: ${localStorage.getItem('admin_username')} \n ${localStorage.getItem('admin_channel_key')} \n ${localStorage.getItem('admin_user_id')}`)
-        }
+            $("#send").on('click', function (){
+                let message = $("#message")
+                prevent_blank_text()
+                let message_data = {message: message.val(), timestamp: new Date().toDateString(), user_id:"{{ session.user }}", room_id:"{{ session.room }}"}
+                console.log(message_data)
 
-        socket.on('channel created', channel_data =>{
-            localStorage.setItem("admin_username",channel_data.channel_user)
-            localStorage.setItem("admin_user_id",channel_data.channel_user_id)
-            localStorage.setItem("admin_channel_key", channel_data.channel_key)
-            console.log(` Data Created: ${localStorage.getItem('admin_channel_key')}\n  ${localStorage.getItem('admin_username')}\n${localStorage.getItem('admin_user_id')}`)
+                message.val('')
+                socket.emit('send', {message_data})
+            })
+
+            socket.on('connect', function (){
+                socket.emit('join channel', {})
+            })
+
+
+            socket.emit('create channel',{"user_id": "{{ session.user }}", "room_id": "{{ session.room }}"})
+            socket.on('broadcast message', function (data){
+                $("#messagebox").append(`
+                <div class="d-flex flex-row ">
+                    <div class="col-lg-4">
+                        <div class="card text-white bg-dark mb-3">
+                            <div class="card-header">${data.message_data['user_id']}</div>
+                            <div class="card-body">
+                                <h4 class="card-title">${data.message_data['timestamp']}</h4>
+                                <p class="card-text text-white">${data.message_data['message']}</p>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>`)
+            })
+
         })
-    })
-    $("#send").on('click', function (e){
-        e.preventDefault()
-        console.log($("#message").val())
-        socket.emit('send message', $("#message").val())
-    })
+
+        socket.on('channel created', function (data){
+            alert(`${data.user_id} has created a room`)
+        })
+        $("#disconnect").on('click', function (e){
+            e.preventDefault()
+            socket.emit('leave channel', {"user_id": "{{ session.user }}", "room_id": "{{ session.room }}"}, function (){
+                socket.disconnect()
+                localStorage.removeItem("user_id")
+                localStorage.removeItem("room_id")
+            })
+        })
+        function prevent_blank_text(){
+            $("#send").attr('disabled', true)
+
+            // pseudo validator
+            $("#message").on('keyup', function (e){
+                if ($("#message").val().length > 0){
+                    $("#send").attr('disabled', false)
+                }else{
+                    $("#send").attr('disabled', true)
+                }
+            })
+        }
+        function generate_random_string(is_num){
+            let salt_table = "1234567890abcdefghijklmnopqrstuvwxyz"
+            let salt_table_numeric = "123456789"
+            let random_string = ""
+            for(let i = 0; i <= 10; ++i){
+                random_string += is_num ? salt_table_numeric[Math.floor(Math.random() * 9)] : salt_table[Math.floor(Math.random() * 35)]
+            }
+            return random_string
+        }
 
     </script>
 {% endblock %}
