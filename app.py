@@ -11,7 +11,6 @@ import constants
 from flask_cors import CORS
 from wtforms import Form, StringField, TextAreaField, validators, PasswordField
 from flask_socketio import SocketIO, join_room, leave_room, emit
-from eventlet import wsgi
 app = Flask(__name__)
 channel_list = list()
 channel_messages = list()
