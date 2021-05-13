@@ -3,7 +3,7 @@
 {% block body %}
     <div class="entry">
         <h1 class="title-dashed">{{ entry.title }}</h1>
-        <div class="inner">
+        <div class="inner" style="text-align: justify !important;">
 
             <div id="post-body">
                 <p id="placeholder">{% filter markdown %} {{ body | safe}} {% endfilter %} </p></div>
