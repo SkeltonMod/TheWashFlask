@@ -24,9 +24,13 @@
     <orderEntry type="library" name="egg.js" level="application" />
     <orderEntry type="library" name="98.css" level="application" />
     <orderEntry type="library" name="socket.io" level="application" />
+    <orderEntry type="library" name="pusher" level="application" />
+    <orderEntry type="library" name="axios" level="application" />
   </component>
   <component name="PackageRequirementsSettings">
-    <option name="keepMatchingSpecifier" value="false" />
+    <option name="versionSpecifier" value="Don't specify version" />
+    <option name="removeUnused" value="true" />
+    <option name="modifyBaseFiles" value="true" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />

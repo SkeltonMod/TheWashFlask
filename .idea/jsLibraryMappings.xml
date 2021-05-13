@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="file://$PROJECT_DIR$" libraries="{98.css, @editorjs, @videojs/http-streaming, ckeditor, dexie, egg.js, github, highlight, jquery-3.6.0, jquery-ui, pouchdb, simplemde, socket.io, video, video-js}" />
+    <file url="file://$PROJECT_DIR$" libraries="{98.css, @editorjs, @videojs/http-streaming, axios, ckeditor, dexie, egg.js, github, highlight, jquery-3.6.0, jquery-ui, pouchdb, pusher, simplemde, socket.io, video, video-js}" />
   </component>
 </project>

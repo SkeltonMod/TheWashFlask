@@ -1,6 +1,11 @@
-feedparser~=6.0.2
-Flask~=1.1.2
-beautifulsoup4~=4.9.3
-WTForms~=2.3.3
-setuptools~=54.2.0
-requests~=2.25.1
+feedparser
+Flask
+beautifulsoup4
+WTForms
+setuptools
+requests
+Flask-Caching
+flask-cors
+flask-socketio
+flask-mysqldb
+Flask-Markdown
