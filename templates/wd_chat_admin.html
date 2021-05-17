@@ -12,18 +12,21 @@
                             <div class="card-body">
                                 <h4 class="card-title">Auto generated message</h4>
                                 <p class="card-text text-white">Welcome {{ session.user }}</p>
+                                <p class="card-text text-white" id="room"></p>
                                 <p class="card-text text-white">Press Alt + L to Traverse through available rooms</p>
 
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
+
         </div>
         <div class="jumbotron mb-2">
             <div class="form-inline justify-content-center">
                 <label class="sr-only" for="sendMessage"></label>
-                <textarea type="text" class="form-control mb-2 mr-sm-2 bg-dark col-lg-10" id="message" style="resize: none" placeholder="Message"></textarea>
+                <label for="message"></label><textarea type="text" class="form-control mb-2 mr-sm-2 bg-dark col-lg-10" id="message" style="resize: none" placeholder="Message"></textarea>
                 <button type="button" id="send" class="btn btn-success">Submit</button>
             </div>
 
@@ -32,36 +35,49 @@
                 <button id="disconnect" class="btn btn-danger mr-3">Disconnect!</button>
                 <button class="btn btn-info mr-3">Buzz!</button>
             </div>
+
         </div>
+
+       <div class="bs-component">
+           <div class="card text-white bg-info mb-3" id="alertbox" style="display: none">
+               <div class="card-header">Rooms</div>
+               <div class="card-body">
+                   <h4 class="card-title">Available Rooms</h4>
+                   <div id="room-box">
+
+                   </div>
+               </div>
+           </div>
+       </div>
+
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script>
         let socket = io.connect(location.protocol+ '//' + document.domain + ':' + location.port)
+        let links = false
         $(document).ready(function (){
             if(!localStorage.getItem('room_id') && !localStorage.getItem('user_id')){
                 localStorage.setItem('user_id', "{{ session.user }}")
                 localStorage.setItem('room_id', "{{ session.room}}")
             }
-
+            // make your original room, your default room
+            localStorage.setItem('current_channel', "{{ session.room}}")
             $("#send").on('click', function (){
                 let message = $("#message")
                 prevent_blank_text()
-                let message_data = {message: message.val(), timestamp: new Date().toDateString(), user_id:"{{ session.user }}", room_id:"{{ session.room }}"}
+                let message_data = {message: message.val(), timestamp: new Date().toDateString(), user_id:"{{ session.user }}", room_id:`${localStorage.getItem("current_channel")}`}
                 console.log(message_data)
 
                 message.val('')
                 socket.emit('send', {message_data})
             })
-
-            socket.on('connect', function (){
-                socket.emit('join channel', {})
-            })
-
-
             socket.emit('create channel',{"user_id": "{{ session.user }}", "room_id": "{{ session.room }}"})
             socket.on('broadcast message', function (data){
+                let user_id = "{{ session.user }}"
+                let owner = (data['message_data'].user_id === user_id)
+                console.log(`${owner}: ${data['message_data'].user_id}->${user_id}`)
                 $("#messagebox").append(`
-                <div class="d-flex flex-row ">
+                <div class="${data['message_data'].room_id} d-flex flex-row ${owner ? "flex-row-reverse": "flex-row"}">
                     <div class="col-lg-4">
                         <div class="card text-white bg-dark mb-3">
                             <div class="card-header">${data.message_data['user_id']}</div>
@@ -77,20 +93,88 @@
 
         })
 
-        socket.on('channel created', function (data){
-            alert(`${data.user_id} has created a room`)
+        document.addEventListener('keydown', function (e){
+            let alertbox = $("#alertbox")
+            if(e.altKey && e.key === "l"){
+                links = !links
+            }
+
+            if(links){
+                alertbox.show()
+                $("#alertbox").draggable
+            }else{
+                alertbox.hide()
+            }
         })
-        $("#disconnect").on('click', function (e){
-            e.preventDefault()
-            socket.emit('leave channel', {"user_id": "{{ session.user }}", "room_id": "{{ session.room }}"}, function (){
-                socket.disconnect()
-                localStorage.removeItem("user_id")
-                localStorage.removeItem("room_id")
+
+        socket.on('channel created', function (data){
+            if(data.user_id !== "SuperUser"){
+                $("#messagebox").append(`<div class="d-flex flex-row announce">
+                    <div class="col-lg-4">
+                        <div class="card text-white bg-info mb-3">
+                            <div class="card-header">System</div>
+                            <div class="card-body">
+                                <h4 class="card-title">Server Join Announcement</h4>
+                                <p class="card-text text-white">${data.user_id} has joined in Room ${data.room_id} </p>
+                                 <button type="button" class="btn btn-success" onclick="join_channel('${data.room_id}')">Join</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`)
+
+
+
+            }
+            socket.emit('get channels', {"user_id": "{{ session.user }}", "room_id": "{{ session.room }}"})
+        })
+
+        socket.on('return channels', function (channel_data){
+            localStorage.setItem('channels', JSON.stringify(channel_data))
+            let parsed_data = JSON.parse(localStorage.getItem('channels'))
+
+            $.each(parsed_data, function (key, value){
+                if (value.room_id !== "{{ session.room }}"){
+                    $("#room-box").html(`
+                <div class="col-lg-4 my-3" id="${key}">
+                        ${value.user_id} <button type="button" class="btn btn-success" onclick="join_channel('${value.room_id}')">Join</button>
+                        <button type="button" class="btn btn-danger" onclick="disconnect_channel('${value.room_id}', '${key}')">Disconnect</button>
+                </div>`)
+                }
             })
         })
+
+        //disconnect self, but don't leave the server when you're the admin
+        $("#disconnect").on('click', function (e){
+            e.preventDefault()
+
+            socket.emit('leave channel', {"user_id": "{{ session.user }}", "room_id": "{{ session.room }}"}, function (){
+                socket.disconnect()
+                localStorage.removeItem('room_id')
+                localStorage.removeItem('user_id')
+                window.location.href = "/api/underground"
+            })
+        })
+
+        function join_channel(room_id){
+            socket.emit('join channel', {"user_id": "{{ session.user  }}", "room_id": room_id})
+            localStorage.setItem("current_channel", room_id)
+            $("#room").text(`You are currently in ${localStorage.getItem('current_channel')}`)
+            $(".announce").remove()
+        }
+
+        function disconnect_channel(room_id, id){
+            socket.emit('kick user', {"user_id": "{{ session.user  }}", "room_id": room_id})
+            localStorage.setItem("current_channel", "{{ session.room }}")
+
+            //return to admin channel
+            socket.emit('join channel', {"user_id": "{{ session.user  }}", "room_id": "{{ session.room }}"})
+            $("#room").text(`You are currently in ${localStorage.getItem('current_channel')}`)
+            $(`#${id}`).remove()
+            $(`.${room_id}`).remove()
+        }
+
         function prevent_blank_text(){
             $("#send").attr('disabled', true)
-
             // pseudo validator
             $("#message").on('keyup', function (e){
                 if ($("#message").val().length > 0){
@@ -99,15 +183,6 @@
                     $("#send").attr('disabled', true)
                 }
             })
-        }
-        function generate_random_string(is_num){
-            let salt_table = "1234567890abcdefghijklmnopqrstuvwxyz"
-            let salt_table_numeric = "123456789"
-            let random_string = ""
-            for(let i = 0; i <= 10; ++i){
-                random_string += is_num ? salt_table_numeric[Math.floor(Math.random() * 9)] : salt_table[Math.floor(Math.random() * 35)]
-            }
-            return random_string
         }
 
     </script>

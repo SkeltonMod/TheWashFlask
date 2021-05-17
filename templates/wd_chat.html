@@ -3,7 +3,7 @@
 {% block body %}
 
     <div class="container">
-        <div class="row">
+        <div class="row" id="rowcont">
             <div class="jumbotron my-4 justify-content-center" id="messagebox" style="height: auto !important; overflow: auto; max-height: 470px !important;">
                 <div class="d-flex flex-row ">
                     <div class="col-lg-4">
@@ -56,33 +56,33 @@
 
                 message.val('')
                 socket.emit('send', {message_data})
-            })
 
-            socket.on('connect', function (){
-                socket.emit('join channel', {})
             })
-
 
             socket.emit('create channel',{"user_id": "{{ user_id }}", "room_id": "{{ room_id }}"})
+            socket.emit('load message', {"room_id": "{{ room_id }}"})
+
+
             socket.on('broadcast message', function (data){
+                let user_id = "{{ user_id }}"
+                let owner = (data['message_data'].user_id === user_id)
+                console.log(`${owner}: ${data['message_data'].user_id}->${user_id}`)
                 $("#messagebox").append(`
-                <div class="d-flex flex-row ">
+                <div class="d-flex ${owner ? "flex-row-reverse": "flex-row"}">
                     <div class="col-lg-4">
                         <div class="card text-white bg-dark mb-3">
                             <div class="card-header">${data.message_data['user_id']}</div>
                             <div class="card-body">
                                 <h4 class="card-title">${data.message_data['timestamp']}</h4>
                                 <p class="card-text text-white">${data.message_data['message']}</p>
-
                             </div>
                         </div>
                     </div>
                 </div>`)
+
             })
 
         })
-
-
 
         $("#disconnect").on('click', function (e){
             e.preventDefault()
@@ -90,8 +90,18 @@
                 socket.disconnect()
                 localStorage.removeItem("user_id")
                 localStorage.removeItem("room_id")
+                window.location.href = "/"
             })
         })
+
+        socket.on('user kicked', function (channel_data){
+            alert(`You have been kicked from Room ${channel_data.room_id}`)
+            socket.disconnect()
+            localStorage.removeItem("user_id")
+            localStorage.removeItem("room_id")
+            window.location.href = "/"
+        })
+
         function prevent_blank_text(){
             $("#send").attr('disabled', true)
 

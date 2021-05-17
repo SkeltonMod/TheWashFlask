@@ -162,14 +162,17 @@ def chat():
         session['user'] = generate_channel_id(True)
     print(session)
     print(len(session))
-    return render_template('wd_chat.html', room_id=session['room'], user_id=session['user'])
+    if session['user'] == "SuperUser":
+       return redirect(url_for('login'))
+    else:
+        return render_template('wd_chat.html', room_id=session['room'], user_id=session['user'])
 
 @socketio.on('join channel')
 def join_channel(data):
-    print(f'Joined Room {session.get("room")}')
-    room = session.get('room')
+    print(f'Joined Room {data["room_id"]}')
+    room = data["room_id"]
     join_room(room)
-    socketio.emit('joined channel ack', room=room)
+    socketio.emit('joined channel ack',broadcast=True, room=room)
 
 @socketio.on('leave channel')
 def leave_channel(data):
@@ -182,21 +185,53 @@ def leave_channel(data):
     print(channel_list)
     socketio.emit('leave channel ack', room=room)
 
+@socketio.on('kick user')
+def kick_user(data):
+    print(f"You are kicked from Room: {data['room_id']}")
+    room = data['room_id']
+    leave_room(room)
+    for key, value in enumerate(channel_list):
+        if data['room_id'] in value['room_id']:
+            channel_list.pop(key)
+    print(channel_list)
+    channel_data = channel_list
+    socketio.emit('user kicked',channel_data, room=room)
+
+
 @socketio.on('send')
 def send_message(data):
+    print(data['message_data']['room_id'])
+    room = data['message_data']['room_id']
+    channel_messages.append({f"{session['room']}": data['message_data']})
+    emit('broadcast message', data,broadcast=True, room=room)
+
+@socketio.on('load message')
+def load_message(data):
     print(data)
-    room = session.get('room')
-    emit('broadcast message', data, room=room)
+    # Load message from array
+    # print(channel_messages['']['room_id'])
+    # for key, value in enumerate(channel_messages):
+    #     print(value[f"{data['room_id']}"])
+
+
+@socketio.on('get channels')
+def get_channels(data):
+    channel_data = channel_list
+    print(f"channel data: {channel_data}")
+    emit('return channels', channel_data)
 
 @socketio.on('create channel')
 def create_channel(data):
     if len(channel_list) == 0 or data not in channel_list:
         channel_list.append(data)
     print(channel_list)
+    # After creating the channel, Join it!
+    room=session.get('room')
+    join_room(room)
     emit('channel created', data, broadcast=True)
 
 if __name__ == "__main__":
-    socketio.run(app)
+    socketio.run(app, host='0.0.0.0', port=1024, debug=True)
 
 
 
