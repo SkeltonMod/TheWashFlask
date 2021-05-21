@@ -2,6 +2,20 @@ from bs4 import BeautifulSoup
 import requests
 import constants
 import random
+from flask import g
+import sqlite3
+from sqlite3 import Error
+
+DATABASE = 'session.db'
+
+create_table = """ CREATE TABLE IF NOT EXISTS temp_room (
+                                        id integer PRIMARY KEY,
+                                        username text NOT NULL,
+                                        room text NOT NULL,
+                                        real_name text NOT NULL,
+                                        unique_key text NOT NULL,
+                                        logged boolean NOT NULL
+                                    ); """
 
 
 def Entries(arr):  # ACCEPTS LIST
@@ -104,24 +118,64 @@ def play(keyword):
     return response.json()
 
 
-def download(keyword):
-    get_body = requests.get(constants.EPISODE_URL + keyword).content
-    bs = BeautifulSoup(get_body, "html.parser")
-    dl_link = ""
-    final_link = list()
-    for dl in bs.find("li", class_="dowloads").find_all("a"):
-        dl_link = dl['href']
-    get_body = requests.get(dl_link).content
-    bs = BeautifulSoup(get_body, "html.parser")
-
-    for dl in bs.find("div", class_="mirror_link").find_all("a"):
-        if "720P" in dl.text:
-            dl_link = dl['href']
-    get_body = requests.get(dl_link).content
-    bs = BeautifulSoup(get_body, "html.parser")
-    capt = ""
-    for captcha in bs.find_all("form", {"id": "challenge-form"}):
-        final_link.append({"download_link": captcha['action'], "captcha_form": captcha})
-    return final_link
+def get_db():
+    con = sqlite3.connect(DATABASE)
+    return con
 
 
+def create_temp_table():
+    con = get_db()
+    cur = con.cursor()
+    cur.execute(create_table)
+
+
+def check_if_exists(user):
+    sql = "SELECT * FROM temp_room WHERE real_name=?"
+    con = get_db()
+    cur = con.cursor()
+    cur.execute(sql, (user, ))
+    if cur.fetchone():
+        return True
+    else:
+        return False
+
+
+def check_if_logged(user):
+    sql = "SELECT * FROM temp_room WHERE real_name=?"
+    con = get_db()
+    cur = con.cursor()
+    cur.execute(sql, (user,))
+    return cur.fetchone()
+
+
+def get_data(unique_key):
+    sql = "SELECT * FROM temp_room WHERE unique_key=?"
+    con = get_db()
+    cur = con.cursor()
+    cur.execute(sql, (unique_key,))
+    return cur.fetchone()
+
+
+def get_all_sessions():
+    sql = "SELECT * FROM temp_room"
+    con = get_db()
+    cur = con.cursor()
+    cur.execute(sql)
+    return cur.fetchall()
+
+
+def delete_session(query):
+    sql = "DELETE FROM temp_room WHERE room=? AND username=?"
+    con = get_db()
+    cur = con.cursor()
+    cur.execute(sql, query)
+    con.commit()
+
+
+def create_temp_user(user):
+    sql = "INSERT INTO temp_room(username, room, real_name, unique_key, logged) VALUES (?, ?, ?, ?, 1)"
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute(sql, user)
+    conn.commit()
+    print(cur.lastrowid)

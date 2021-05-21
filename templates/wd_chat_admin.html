@@ -19,7 +19,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
 
         </div>
@@ -63,13 +62,15 @@
             // make your original room, your default room
             localStorage.setItem('current_channel', "{{ session.room}}")
             $("#send").on('click', function (){
-                let message = $("#message")
-                prevent_blank_text()
-                let message_data = {message: message.val(), timestamp: new Date().toDateString(), user_id:"{{ session.user }}", room_id:`${localStorage.getItem("current_channel")}`}
-                console.log(message_data)
+                if(localStorage.getItem('current_channel') !== localStorage.getItem('room_id')){
+                    let message = $("#message")
+                    prevent_blank_text()
+                    let message_data = {message: message.val(), timestamp: new Date().toDateString(), user_id:"{{ session.user }}", room_id:`${localStorage.getItem("current_channel")}`}
+                    console.log(message_data)
 
-                message.val('')
-                socket.emit('send', {message_data})
+                    message.val('')
+                    socket.emit('send', {message_data})
+                }
             })
             socket.emit('create channel',{"user_id": "{{ session.user }}", "room_id": "{{ session.room }}"})
             socket.on('broadcast message', function (data){
@@ -132,12 +133,13 @@
             localStorage.setItem('channels', JSON.stringify(channel_data))
             let parsed_data = JSON.parse(localStorage.getItem('channels'))
 
-            $.each(parsed_data, function (key, value){
+            $.each(parsed_data.channel, function (key, value){
+                console.log(value[2])
                 if (value.room_id !== "{{ session.room }}"){
                     $("#room-box").html(`
                 <div class="col-lg-4 my-3" id="${key}">
-                        ${value.user_id} <button type="button" class="btn btn-success" onclick="join_channel('${value.room_id}')">Join</button>
-                        <button type="button" class="btn btn-danger" onclick="disconnect_channel('${value.room_id}', '${key}')">Disconnect</button>
+                        ${value[3]} <button type="button" class="btn btn-success" onclick="join_channel('${value[2]}')">Join</button>
+                        <button type="button" class="btn btn-danger" onclick="disconnect_channel('${value[2]}', '${key}', '${value[1]}')">Disconnect</button>
                 </div>`)
                 }
             })
@@ -162,8 +164,8 @@
             $(".announce").remove()
         }
 
-        function disconnect_channel(room_id, id){
-            socket.emit('kick user', {"user_id": "{{ session.user  }}", "room_id": room_id})
+        function disconnect_channel(room_id, id, user_id){
+            socket.emit('kick user', {"user_id": user_id, "room_id": room_id})
             localStorage.setItem("current_channel", "{{ session.room }}")
 
             //return to admin channel
