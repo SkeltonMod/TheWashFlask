@@ -1,7 +1,5 @@
 # Project exclude paths
 /venv/
-ENV/
 /entries/
-__pycache__/
 *.zip
 constants.py
