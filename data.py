@@ -113,7 +113,7 @@ def play(keyword):
         iframe_src = iframe['src']
 
     # get ID and title GET Headers
-    get_headers = iframe_src.replace("//gogo-play.net/streaming.php?", "")
+    get_headers = iframe_src.replace("//streamani.net/streaming.php?", "")
     response = requests.get(constants.EPISODE_MEDIA_URL + get_headers)
     return response.json()
 
@@ -140,7 +140,17 @@ def check_if_exists(user):
         return False
 
 
-def check_if_logged(user):
+def check_if_exists_uq(user):
+    sql = "SELECT * FROM temp_room WHERE unique_key=?"
+    con = get_db()
+    cur = con.cursor()
+    cur.execute(sql, (user, ))
+    if cur.fetchone():
+        return True
+    else:
+        return False
+
+def verify_username(user):
     sql = "SELECT * FROM temp_room WHERE real_name=?"
     con = get_db()
     cur = con.cursor()
@@ -157,7 +167,7 @@ def get_data(unique_key):
 
 
 def get_all_sessions():
-    sql = "SELECT * FROM temp_room"
+    sql = "SELECT * FROM temp_room WHERE logged=1"
     con = get_db()
     cur = con.cursor()
     cur.execute(sql)
@@ -165,10 +175,10 @@ def get_all_sessions():
 
 
 def delete_session(query):
-    sql = "DELETE FROM temp_room WHERE room=? AND username=?"
+    sql = "DELETE FROM temp_room WHERE unique_key=?"
     con = get_db()
     cur = con.cursor()
-    cur.execute(sql, query)
+    cur.execute(sql, (query, ))
     con.commit()
 
 
@@ -179,3 +189,13 @@ def create_temp_user(user):
     cur.execute(sql, user)
     conn.commit()
     print(cur.lastrowid)
+
+
+# Deactivate Sessions
+def edit_session(query):
+    sql = "UPDATE temp_room SET logged=? WHERE unique_key=?"
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute(sql, query)
+    conn.commit()
+    pass
