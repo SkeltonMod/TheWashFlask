@@ -7,7 +7,7 @@ EPISODE_URL = BASE_URL + "/"
 EPISODE_MEDIA_URL = "https://streamani.net/ajax.php?"
 
 # DB constants
-HOST = "127.0.0.1"
-USERNAME = "root"
-PASSWORD = ""
-DB_NAME = "posts"
+HOST = "localhost"
+USERNAME = "gvim80"
+PASSWORD = "tabina1234567890"
+DB_NAME = "gvim80_posts"
