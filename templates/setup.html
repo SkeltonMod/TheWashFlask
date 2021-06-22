@@ -1,0 +1,89 @@
+{% extends 'layout_underground.html' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center my-6">
+
+            <div class="col-lg-6 my-5">
+                <p id="progress_text">Loading...</p>
+                <div class="progress">
+
+                    <div class="progress-bar" id="progress" role="progressbar" style="width: 10%;" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+
+    let progressbar = $("#progress")
+    let progress_text = $("#progress_text")
+    let progress = 10
+    $(document).ready(function (){
+        // Get all the necessary data
+
+        if (localStorage.getItem('room') && localStorage.getItem('user') && localStorage.getItem('unique_key')){
+            window.location.href = "{{ url_for('chat') }}"
+        }else{
+            $.getJSON({
+
+                url: '{{ url_for("verify") }}',
+                data:{
+                    key: 'init',
+                    room: "{{ session_vars[2] }}",
+                    user: "{{ session_vars[1] }}",
+                    facebook_id: "{{ session_vars[3] }}",
+                    unique_key: "{{ session_vars[4] }}",
+                    state: "{{ session_vars[5] }}",
+                },
+                beforeSend: function (){
+                    progress_text.text('Checking Session')
+                },
+                success: function (response){
+
+                    switch (response.status){
+                        case "OK":
+                            progressbar.css('width', `${progress += 10}%`)
+                            setTimeout(function(){ add_to_localstorage('room', '{{ session_vars[2] }}', loaderCallback)}, 1000);
+                            setTimeout(function(){ add_to_localstorage('user', '{{ session_vars[1] }}', loaderCallback)}, 2000);
+                            setTimeout(function(){ add_to_localstorage('unique_key', '{{ session_vars[4] }}', loaderCallback)}, 3000);
+                            setTimeout(function(){ loaderCallback(40, 'Logging you in ^_^')}, 4000);
+                            setTimeout(function(){
+                                window.location.href = "{{ url_for('chat') }}"
+                            }, 4500);
+
+
+                            break;
+                        case "FATAL_ERROR":
+                            loaderCallback(40, `${response.status} Invalid Session -_-`)
+                            progressbar.addClass('bg-danger')
+                            break;
+                        case "INVALID":
+                            loaderCallback(40, `${response.status}: Session BUSY ;_;`)
+                            progressbar.addClass('progress-bar-striped bg-warning')
+                            break;
+                        case "DORMANT":
+                            loaderCallback(40, `${response.status}: Snooooze %_%`)
+                            progressbar.addClass('progress-bar-striped bg-info')
+                            break;
+                    }
+
+                },
+            })
+        }
+    })
+    function loaderCallback(increment, text){
+        progressbar.css('width', `${progress += increment}%`)
+        progress_text.text(text)
+    }
+
+    function add_to_localstorage(key, value, loaderCallback){
+        localStorage.setItem(key, value)
+        loaderCallback(20, `Setting up ${key} as ${value}`)
+    }
+
+    </script>
+
+{% endblock %}

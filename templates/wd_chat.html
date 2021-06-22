@@ -12,8 +12,9 @@
                             <div class="card-body" id="system_body">
                                 <h4 class="card-title">Auto generated message</h4>
                                 <p class="card-text text-white">Facebook chat wrapper v1 Beta</p>
-                                <p class="card-text text-white">Currently in: {{ room_id }}</p>
-                                <p class="card-text text-white">ROOM ID: {{ user_id }}</p>
+                                <p class="card-text text-white">WELKOMMEN! {{ session_vars[3] }}</p>
+                                <p class="card-text text-white">Currently in: {{ session_vars[1] }}</p>
+                                <p class="card-text text-white">ROOM ID: {{ session_vars[2] }}</p>
                                 <p class="card-text text-white">Please Note that you will be warned 3 times
                                     before getting disconnected</p>
                                 <p class="card-text text-white">To initiate a query again please talk to the
@@ -42,56 +43,50 @@
         let socket = io.connect(location.protocol+ '//' + document.domain + ':' + location.port)
 
         $(document).ready(function (){
-            if(!localStorage.getItem('room_id') && !localStorage.getItem('user_id')){
-                localStorage.setItem('user_id', "{{ user_id }}")
-                localStorage.setItem('room_id', "{{ room_id }}")
-            }
-
-            $("#send").on('click', function (){
-                let message = $("#message")
-                prevent_blank_text()
-                let message_data = {message: message.val(), timestamp: new Date().toDateString(), user_id:"{{ user_id }}", room_id:"{{ room_id }}"}
-                console.log(message_data)
-
-                message.val('')
-                socket.emit('send', {message_data})
+            socket.on('connect', function (){
+                socket.emit('join channel', {'user': "{{ session_vars[1] }}", 'room': "{{ session_vars[2] }}"})
             })
-            socket.emit('create channel',{"user_id": "{{ user_id }}", "room_id": "{{ room_id }}"})
-            socket.emit('load message', {"room_id": "{{ room_id }}"})
-            socket.on('broadcast message', function (data){
-                let user_id = "{{ user_id }}"
-                let owner = (data['message_data'].user_id === user_id)
-                console.log(`${owner}: ${data['message_data'].user_id}->${user_id}`)
-                $("#messagebox").append(`
+            prevent_blank_text()
+        })
+
+        $("#send").on('click', function (e){
+            e.preventDefault()
+            socket.emit('send message', {'user': "{{ session_vars[1] }}", 'room': "{{ session_vars[2] }}", 'timestamp': new Date().toLocaleString(), 'content': $("#message").val()},
+            function (){
+                $("#message").val('')
+            })
+        })
+
+
+        socket.on('broadcast message', function (message_data){
+            console.log(message_data)
+            let user_id = "{{ session_vars[1] }}"
+            let owner = (message_data.user === user_id)
+            console.log(`${owner}: ${message_data.user}->${user_id}`)
+            $("#messagebox").append(`
                 <div class="d-flex ${owner ? "flex-row-reverse": "flex-row"}">
                     <div class="col-lg-4">
                         <div class="card text-white bg-dark mb-3">
-                            <div class="card-header">${data.message_data['user_id']}</div>
+                            <div class="card-header">${message_data.user}</div>
                             <div class="card-body">
-                                <h4 class="card-title">${data.message_data['timestamp']}</h4>
-                                <p class="card-text text-white">${data.message_data['message']}</p>
+                                <h4 class="card-title">${message_data.timestamp}</h4>
+                                <p class="card-text text-white">${message_data.content}</p>
                             </div>
                         </div>
                     </div>
                 </div>`)
-            })
         })
 
         $("#disconnect").on('click', function (e){
             e.preventDefault()
-            socket.emit('leave channel', {"user_id": "{{ user_id }}", "room_id": "{{ room_id }}"}, function (){
+            socket.emit('leave channel', {'user': "{{ session_vars[1] }}", 'room': "{{ session_vars[2] }}"}, function (){
                 socket.disconnect()
-                localStorage.removeItem("user_id")
-                localStorage.removeItem("room_id")
-                window.location.href = "/404"
-            })
-        })
+                localStorage.removeItem('room')
+                localStorage.removeItem('user')
+                localStorage.removeItem('unique_key')
 
-        socket.on('user kicked', function (channel_data){
-            socket.disconnect()
-            localStorage.removeItem("user_id")
-            localStorage.removeItem("room_id")
-            window.location.href = "/disconnected"
+                window.location.href = "{{ url_for('err') }}"
+            })
         })
 
         function prevent_blank_text(){

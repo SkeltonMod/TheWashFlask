@@ -5,6 +5,7 @@ import random
 from flask import g
 import sqlite3
 from sqlite3 import Error
+import re
 
 DATABASE = 'session.db'
 
@@ -112,10 +113,12 @@ def play(keyword):
     for iframe in bs.find_all("iframe"):
         iframe_src = iframe['src']
 
-    # get ID and title GET Headers
     get_headers = iframe_src.replace("//streamani.net/streaming.php?", "")
-    response = requests.get(constants.EPISODE_MEDIA_URL + get_headers)
-    return response.json()
+
+    # ALAS!
+    response = requests.get(constants.STREAM_ANI_URL + get_headers).content
+    bs = BeautifulSoup(response, "html.parser")
+    return re.findall("('https:\/\/\S+')", str(bs.find_all('script', {"type": "text/JavaScript"})))
 
 
 def get_db():
